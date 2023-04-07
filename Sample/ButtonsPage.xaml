@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             xmlns:local="clr-namespace:Sample"
+             x:Class="Sample.ButtonsPage"
+             x:DataType="local:ButtonsPage"
+             Title="ButtonsPage"
+             Padding="10">
+    <StackLayout Spacing="10">
+        <Label Text="{Binding Test}"/>
+        <bsam:Button TapCommand="{Binding CommandTap}">
+            <StackLayout Spacing="10">
+                <Image Source="dotnet_bot.png"/>
+                <Label Text="Hello world"
+                       HorizontalTextAlignment="Center"
+                       TextColor="White"/>
+            </StackLayout>
+        </bsam:Button>
+
+        <bsam:Button TapColor="Gray"
+                     TapCommand="{Binding CommandTap}"
+                     HorizontalOptions="Start"
+                     BorderColor="Gray"
+                     Padding="10"
+                     CornerRadius="10"
+                     TryRippleEffect="False"
+                     BorderWidth="2">
+            <Label Text="Hello world!"
+                   TextColor="Yellow"/>
+        </bsam:Button>
+    </StackLayout>
+</ContentPage>
