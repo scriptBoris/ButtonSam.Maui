@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Sample"
+             xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="Sample.ButtonAdvanceContentPage"
+             x:DataType="local:ButtonAdvanceContentPage"
+             Title="ButtonAdvanceContentPage"
+             Padding="10">
+    <VerticalStackLayout>
+        <bsam:Button>
+            <StackLayout Orientation="Horizontal">
+                <StackLayout>
+                    <Label Text="You authorized as"
+                           TextColor="Gray"
+                           FontSize="18"/>
+                    <Label Text="Samuel Leroy Jackson"
+                           TextColor="White"
+                           FontSize="20"/>
+
+                    <Label Text="Online"
+                           Margin="0,10,0,0"
+                           TextColor="Gray"/>
+                </StackLayout>
+                <Image Source="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/SamuelLJackson.jpg/250px-SamuelLJackson.jpg"
+                       HeightRequest="65"
+                       WidthRequest="65"
+                       Aspect="AspectFill"
+                       HorizontalOptions="EndAndExpand"
+                       VerticalOptions="Center"/>
+            </StackLayout>
+        </bsam:Button>
+    </VerticalStackLayout>
+</ContentPage>

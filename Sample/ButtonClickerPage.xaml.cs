@@ -2,11 +2,11 @@ using System.Windows.Input;
 
 namespace Sample;
 
-public partial class ButtonsPage : ContentPage
+public partial class ButtonClickerPage : ContentPage
 {
 	private int count = 0;
 
-	public ButtonsPage()
+	public ButtonClickerPage()
 	{
 		InitializeComponent();
 		BindingContext = this;

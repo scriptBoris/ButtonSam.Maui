@@ -29,7 +29,7 @@ namespace ButtonSam.Maui
         public Button()
         {
             IsClippedToBounds = true;
-            base.BackgroundColor = (Color)BackgroundColorProperty.DefaultValue;
+            //base.BackgroundColor = (Color)BackgroundColorProperty.DefaultValue;
         }
 
         #region bindable props
@@ -203,6 +203,12 @@ namespace ButtonSam.Maui
         }
         #endregion bindable props
 
+        protected override void OnParentSet()
+        {
+            base.OnParentSet();
+            Redraw(null, null);
+        }
+
         protected override ILayoutManager CreateLayoutManager()
         {
             return this;
@@ -219,8 +225,8 @@ namespace ButtonSam.Maui
 
                 double x = Padding.Left + bw;
                 double y = Padding.Top + bw;
-                double w = bounds.Width - x;
-                double h = bounds.Height - y;
+                double w = bounds.Width - (Padding.HorizontalThickness + bw);
+                double h = bounds.Height - (Padding.VerticalThickness + bw);
                 cv.Arrange(new Rect(x, y, w, h));
             }
 

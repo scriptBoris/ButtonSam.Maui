@@ -9,7 +9,22 @@ public partial class MainPage : ContentPage
 
     private void Button_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushAsync(new ButtonsPage());
+        Navigation.PushAsync(new ButtonClickerPage());
+    }
+
+    private void Button_Clicked_1(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonNoRipplePage());
+    }
+
+    private void Button_Clicked_2(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonAdvanceContentPage());
+    }
+
+    private void Button_Clicked_3(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonFixedSizePage());
     }
 }
 

@@ -167,6 +167,11 @@ namespace ButtonSam.Maui.Internal
                     isPressedAndIdle = false;
                     break;
 
+                case MotionEventActions.Cancel:
+                    _host.AnimationFinish(false);
+                    isPressedAndIdle = false;
+                    break;
+
                 default:
                     break;
             }

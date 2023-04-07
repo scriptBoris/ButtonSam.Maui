@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="Sample.ButtonFixedSizePage"
+             Title="ButtonFixedSizePage"
+             Padding="10">
+    <StackLayout Spacing="10">
+        <Label Text="this page no contains content"/>
+        <bsam:Button HeightRequest="40"
+                     WidthRequest="150"
+                     HorizontalOptions="Start"/>
+    </StackLayout>
+</ContentPage>

@@ -16,6 +16,7 @@ using AColor = Android.Graphics.Color;
 using ARectF = Android.Graphics.RectF;
 using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
+using Android.Graphics.Drawables;
 
 namespace ButtonSam.Maui
 {
@@ -56,6 +57,23 @@ namespace ButtonSam.Maui
         {
             den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
             //_paint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.DstIn));
+
+            if (Background == null)
+            {
+                var defaultColor = (Microsoft.Maui.Graphics.Color)Button.BackgroundColorProperty.DefaultValue;
+                var drw = new ColorDrawable(defaultColor.ToPlatform());
+                Background = drw;
+            }
+        }
+
+        public override Drawable? Background 
+        {
+            get => base.Background;
+            set 
+            {
+                if (value != null)
+                    base.Background = value; 
+            }
         }
 
         public override void Draw(Canvas? canvas)

@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              xmlns:local="clr-namespace:Sample"
-             x:Class="Sample.ButtonsPage"
-             x:DataType="local:ButtonsPage"
-             Title="ButtonsPage"
+             x:Class="Sample.ButtonClickerPage"
+             x:DataType="local:ButtonClickerPage"
+             Title="Clicker"
              Padding="10">
     <StackLayout Spacing="10">
         <Label Text="{Binding Test}"/>
@@ -16,18 +16,6 @@
                        HorizontalTextAlignment="Center"
                        TextColor="White"/>
             </StackLayout>
-        </bsam:Button>
-
-        <bsam:Button TapColor="Gray"
-                     TapCommand="{Binding CommandTap}"
-                     HorizontalOptions="Start"
-                     BorderColor="Gray"
-                     Padding="10"
-                     CornerRadius="10"
-                     TryRippleEffect="False"
-                     BorderWidth="2">
-            <Label Text="Hello world!"
-                   TextColor="Yellow"/>
         </bsam:Button>
     </StackLayout>
 </ContentPage>

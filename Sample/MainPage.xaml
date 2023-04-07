@@ -4,9 +4,18 @@
              x:Class="Sample.MainPage"
              Title="Test"
              Padding="10">
-    <StackLayout>
-        <Label Text="Test text"/>
+    <StackLayout Spacing="10">
         <Button Clicked="Button_Clicked"
-                Text="Show buttons"/>
+                Text="Clicker counter"/>
+
+        <Button Clicked="Button_Clicked_1"
+                Text="No ripple effect"/>
+
+        <Button Clicked="Button_Clicked_2"
+                Text="Advance content"/>
+
+        <Button Clicked="Button_Clicked_3"
+                Text="Fixed size"/>
+
     </StackLayout>
 </ContentPage>

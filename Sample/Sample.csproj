@@ -57,7 +57,25 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="ButtonsPage.xaml">
+	  <Compile Update="ButtonAdvanceContentPage.xaml.cs">
+	    <DependentUpon>ButtonAdvanceContentPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="ButtonClickerPage.xaml.cs">
+	    <DependentUpon>ButtonClickerPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="ButtonAdvanceContentPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ButtonClickerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ButtonFixedSizePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ButtonNoRipplePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
