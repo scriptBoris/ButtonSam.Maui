@@ -1,6 +1,4 @@
-﻿using Android.Net;
-using ButtonSam.Maui.Internal;
-using Microsoft.Maui.Controls.Shapes;
+﻿using ButtonSam.Maui.Internal;
 using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
