@@ -20,8 +20,12 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Copyright></Copyright>
 		<PackageTags>Maui, button, touch</PackageTags>
-		<Version>0.9.1-beta</Version>
+		<Version>0.9.2-beta</Version>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup>
+	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
