@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0-android</TargetFrameworks>
+		<TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
 		<UseMaui>true</UseMaui>
@@ -20,7 +20,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Copyright></Copyright>
 		<PackageTags>Maui, button, touch</PackageTags>
-		<Version>0.9.0-beta</Version>
+		<Version>0.9.1-beta</Version>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 	</PropertyGroup>
 
