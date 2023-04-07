@@ -26,5 +26,10 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new ButtonFixedSizePage());
     }
+
+    private void Button_Clicked_4(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonWithBorders());
+    }
 }
 

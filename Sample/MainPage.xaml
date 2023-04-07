@@ -17,5 +17,8 @@
         <Button Clicked="Button_Clicked_3"
                 Text="Fixed size"/>
 
+        <Button Clicked="Button_Clicked_4"
+                Text="With borders"/>
+
     </StackLayout>
 </ContentPage>

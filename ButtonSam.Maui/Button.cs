@@ -11,6 +11,12 @@ using System.Windows.Input;
 namespace ButtonSam.Maui
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
+    public interface IWindowsButtonHandler
+    {
+        void UpdateChildren();
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IButtonHandler
     {
         void UpdateCornerRadius(double radius);
