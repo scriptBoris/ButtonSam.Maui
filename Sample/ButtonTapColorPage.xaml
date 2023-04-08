@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-             x:Class="Sample.ButtonWithBorders"
-             Title="Button with borders"
+             x:Class="Sample.ButtonTapColorPage"
+             Title="Custom tap color"
              Padding="10">
     <StackLayout>
-        <bsam:Button BorderColor="Gray"
-                     BorderWidth="2">
-            <Label Text="I have borders!"/>
+        <bsam:Button TapColor="Red">
+            <Label Text="I have custom tap color"
+                   TextColor="White"/>
         </bsam:Button>
     </StackLayout>
 </ContentPage>

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="Sample.ButtonFixedSizePage"
-             Title="ButtonFixedSizePage"
+             Title="Fixed size"
              Padding="10">
     <StackLayout Spacing="10">
         <Label Text="this page no contains content"/>

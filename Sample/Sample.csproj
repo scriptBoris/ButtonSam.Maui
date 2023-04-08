@@ -67,6 +67,9 @@
 	  <Compile Update="ButtonClickerPage.xaml.cs">
 	    <DependentUpon>ButtonClickerPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="ButtonTapColorPage.xaml.cs">
+	    <DependentUpon>ButtonTapColorPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -80,6 +83,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="ButtonNoRipplePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ButtonTapColorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="ButtonWithBorders.xaml">

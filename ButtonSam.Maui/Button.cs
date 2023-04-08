@@ -85,7 +85,7 @@ namespace ButtonSam.Maui
             null,
             propertyChanged: (b, o, n) =>
             {
-                if (b is IView v) v.InvalidateMeasure();
+                if (b is Button self) self.UpdateBorderColor();
             }
         );
         public Color? BorderColor
@@ -102,7 +102,7 @@ namespace ButtonSam.Maui
             1.0,
             propertyChanged: (b, o, n) =>
             {
-                if (b is IView v) v.InvalidateMeasure();
+                if (b is Button self) self.UpdateBorderWidth();
             }
         );
         public double BorderWidth
@@ -291,6 +291,28 @@ namespace ButtonSam.Maui
 
             if (TapCommand.CanExecute(TapCommandParameter))
                 TapCommand.Execute(TapCommandParameter);
+        }
+
+        private void UpdateBorderColor()
+        {
+#if ANDROID
+            if (this is IView v) v.InvalidateMeasure();
+#elif WINDOWS
+            if (Handler is ButtonHandler handler) handler.UpdateBorderColor(BorderColor);
+#elif IOS
+
+#endif
+        }
+
+        private void UpdateBorderWidth()
+        {
+#if ANDROID
+            if (this is IView v) v.InvalidateMeasure();
+#elif WINDOWS
+            if (Handler is ButtonHandler handler) handler.UpdateBorderWidth(BorderWidth);
+#elif IOS
+
+#endif
         }
     }
 

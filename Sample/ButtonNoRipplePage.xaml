@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:Sample"
              x:DataType="local:ButtonNoRipplePage"
              x:Class="Sample.ButtonNoRipplePage"
-             Title="ButtonNoRipplePage"
+             Title="No ripple"
              Padding="10">
     <VerticalStackLayout Spacing="10">
         <Label Text="{Binding Test}"/>

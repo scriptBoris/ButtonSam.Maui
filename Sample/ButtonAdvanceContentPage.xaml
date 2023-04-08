@@ -5,7 +5,7 @@
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="Sample.ButtonAdvanceContentPage"
              x:DataType="local:ButtonAdvanceContentPage"
-             Title="ButtonAdvanceContentPage"
+             Title="Advance content"
              Padding="10">
     <VerticalStackLayout>
         <bsam:Button>

@@ -11,7 +11,9 @@
         <Label Text="{Binding Test}"/>
         <bsam:Button TapCommand="{Binding CommandTap}">
             <StackLayout Spacing="10">
-                <Image Source="dotnet_bot.png"/>
+                <Image Source="dotnet_bot.png"
+                       MaximumHeightRequest="140"
+                       MaximumWidthRequest="140"/>
                 <Label Text="Hello world"
                        HorizontalTextAlignment="Center"
                        TextColor="White"/>

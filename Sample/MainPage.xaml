@@ -10,7 +10,7 @@
 
         <Button Clicked="Button_Clicked_1"
                 Text="No ripple effect"/>
-
+        
         <Button Clicked="Button_Clicked_2"
                 Text="Advance content"/>
 
@@ -19,6 +19,9 @@
 
         <Button Clicked="Button_Clicked_4"
                 Text="With borders"/>
+
+        <Button Clicked="Button_Clicked_5"
+                Text="Custom tap color"/>
 
     </StackLayout>
 </ContentPage>
