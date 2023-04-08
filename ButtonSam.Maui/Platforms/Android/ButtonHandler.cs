@@ -20,7 +20,7 @@ using Android.Graphics.Drawables;
 
 namespace ButtonSam.Maui
 {
-    public partial class ButtonHandler : LayoutHandler, IButtonHandler
+    public partial class ButtonHandler : LayoutHandler
     {
         public Button Proxy => (Button)VirtualView;
         public float CornerRadius { get; private set; }

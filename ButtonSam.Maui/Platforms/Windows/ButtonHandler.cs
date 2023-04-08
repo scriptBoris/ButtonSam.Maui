@@ -13,7 +13,7 @@ using Windows.Devices.Radios;
 
 namespace ButtonSam.Maui
 {
-    public partial class ButtonHandler : LayoutHandler, IButtonHandler
+    public partial class ButtonHandler : LayoutHandler
     {
         public Button Proxy => (Button)VirtualView;
         public bool IsUseBorder => Proxy.BorderColor != null && Proxy.BorderWidth > 0;

@@ -11,18 +11,6 @@ using System.Windows.Input;
 namespace ButtonSam.Maui
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public interface IWindowsButtonHandler
-    {
-        void UpdateChildren();
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public interface IButtonHandler
-    {
-        void UpdateCornerRadius(double radius);
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public partial class ButtonHandler
     {
     }
@@ -35,7 +23,6 @@ namespace ButtonSam.Maui
         public Button()
         {
             IsClippedToBounds = true;
-            //base.BackgroundColor = (Color)BackgroundColorProperty.DefaultValue;
         }
 
         #region bindable props
@@ -119,13 +106,7 @@ namespace ButtonSam.Maui
             10.0,
             propertyChanged: (b, o, n) =>
             {
-                if (b is IView self)
-                {
-                    if (b is Button btn && btn.Handler is IButtonHandler h)
-                        h.UpdateCornerRadius((double)n);
-
-                    self.InvalidateMeasure();
-                }
+                if (b is Button self) self.UpdateCornerRadius();
             }
         );
         public double CornerRadius
@@ -293,6 +274,22 @@ namespace ButtonSam.Maui
                 TapCommand.Execute(TapCommandParameter);
         }
 
+        private void UpdateCornerRadius()
+        {
+#if ANDROID
+            if (Handler is ButtonHandler buttonHandler)
+                buttonHandler.UpdateCornerRadius(CornerRadius);
+
+            if (this is IView v) 
+                v.InvalidateMeasure();
+#elif WINDOWS
+            if (Handler is ButtonHandler buttonHandler)
+                buttonHandler.UpdateCornerRadius(CornerRadius);
+#elif IOS
+            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
+#endif
+        }
+
         private void UpdateBorderColor()
         {
 #if ANDROID
@@ -300,7 +297,7 @@ namespace ButtonSam.Maui
 #elif WINDOWS
             if (Handler is ButtonHandler handler) handler.UpdateBorderColor(BorderColor);
 #elif IOS
-
+            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
 #endif
         }
 
@@ -311,7 +308,7 @@ namespace ButtonSam.Maui
 #elif WINDOWS
             if (Handler is ButtonHandler handler) handler.UpdateBorderWidth(BorderWidth);
 #elif IOS
-
+            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
 #endif
         }
     }

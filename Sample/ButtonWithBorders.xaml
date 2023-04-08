@@ -4,11 +4,29 @@
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="Sample.ButtonWithBorders"
              Title="Button with borders"
-             Padding="10">
-    <StackLayout>
-        <bsam:Button BorderColor="Gray"
+             Padding="10"
+             BackgroundColor="Black">
+    <StackLayout Spacing="10">
+
+        <Label Text="ButtonSam"
+               TextColor="White"/>
+        
+        <bsam:Button BorderColor="Gold"
                      BorderWidth="2">
-            <Label Text="I have borders!"/>
+            <Label Text="I have borders!"
+                   TextColor="Gold"/>
         </bsam:Button>
+
+        <Label Text="MAUI Border (for compare)"
+               TextColor="White"/>
+
+        <Border StrokeThickness="2"
+                Stroke="Gold"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#323232"
+                Padding="10">
+            <Label Text="I have borders!"
+                   TextColor="Gold"/>
+        </Border>
     </StackLayout>
 </ContentPage>
