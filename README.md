@@ -1,5 +1,6 @@
 <p align="center">
-<img src="Images/android13.gif" width="400"/>
+<img src="Images/android13.gif" height="200"/>
+<img src="Images/windows11.gif" height="200"/>
 </p>
 
 # ButtonSam.Maui
