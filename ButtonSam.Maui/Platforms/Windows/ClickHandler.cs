@@ -50,9 +50,5 @@ namespace ButtonSam.Maui.Internal
 
     public class ClickPanel : Microsoft.UI.Xaml.Controls.Panel
     {
-        protected override void OnDisconnectVisualChildren()
-        {
-            base.OnDisconnectVisualChildren();
-        }
     }
 }
