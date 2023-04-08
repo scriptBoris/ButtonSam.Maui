@@ -29,18 +29,18 @@ namespace ButtonSam.Maui.Internal
         private void N_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             isPressed = false;
-            Button.OnClickedFinish();
+            Button.OnTapFinish();
         }
 
         private void N_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             isPressed = true;
-            Button.OnClickedStart();
+            Button.OnTapStart();
         }
 
         private void N_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            Button.OnClickedFinish();
+            Button.OnTapFinish();
             if (isPressed)
                 Button.ThrowTap();
 

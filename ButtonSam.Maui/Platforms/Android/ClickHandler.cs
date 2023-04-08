@@ -87,7 +87,7 @@ namespace ButtonSam.Maui.Internal
             if (IsSdk21 && Button.TryRippleEffect)
                 RippleStart(x, y);
             else
-                Button.OnClickedStart();
+                Button.OnTapStart();
         }
 
         public void AnimationFinish(bool needTrigger)
@@ -95,7 +95,7 @@ namespace ButtonSam.Maui.Internal
             if (IsSdk21 && Button.TryRippleEffect)
                 RippleEnd();
             else
-                Button.OnClickedFinish();
+                Button.OnTapFinish();
 
             if (needTrigger)
                 Button.ThrowTap();

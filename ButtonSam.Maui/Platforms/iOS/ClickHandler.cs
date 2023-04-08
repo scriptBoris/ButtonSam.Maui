@@ -30,7 +30,7 @@ namespace ButtonSam.Maui.Internal
             {
                 case UIGestureRecognizerState.Began:
                     isPressed = true;
-                    Button.OnClickedStart();
+                    Button.OnTapStart();
                     break;
 
                 case UIGestureRecognizerState.Changed:
@@ -39,12 +39,12 @@ namespace ButtonSam.Maui.Internal
                     if (!isInside && isPressed) 
                     {
                         isPressed = false;
-                        Button.OnClickedFinish();
+                        Button.OnTapFinish();
                     }
                     break;
 
                 case UIGestureRecognizerState.Ended:
-                    Button.OnClickedFinish();
+                    Button.OnTapFinish();
                     if (isPressed)
                         Button.ThrowTap();
 
@@ -54,7 +54,7 @@ namespace ButtonSam.Maui.Internal
                 case UIGestureRecognizerState.Cancelled:
                 case UIGestureRecognizerState.Failed:
                     isPressed = false;
-                    Button.OnClickedFinish();
+                    Button.OnTapFinish();
                     break;
                 default:
                     break;

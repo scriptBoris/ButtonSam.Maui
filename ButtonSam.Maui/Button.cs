@@ -253,13 +253,13 @@ namespace ButtonSam.Maui
             }
         }
 
-        internal void OnClickedStart()
+        public virtual void OnTapStart()
         {
             var b = base.BackgroundColor ?? Colors.Transparent;
             this.ColorTo(b, TapColor, c => base.BackgroundColor = c, 100);
         }
 
-        internal void OnClickedFinish()
+        public virtual void OnTapFinish()
         {
             var b = base.BackgroundColor ?? Colors.Transparent;
             this.ColorTo(b, BackgroundColor, c => base.BackgroundColor = c, 180);
