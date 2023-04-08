@@ -1,3 +1,7 @@
+<p align="center">
+<img src="Images/android13.gif" width="400"/>
+</p>
+
 # ButtonSam.Maui
 The .NET 7.0 library for create easy interactive UI
 - **Custom content**
