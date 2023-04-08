@@ -15,18 +15,33 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<Nullable>enable</Nullable>
-		<Authors>scriptboris</Authors>
+		<Authors>Boris Krit</Authors>
 		<Title>ButtonSam.Maui</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Copyright></Copyright>
-		<PackageTags>Maui, button, touch</PackageTags>
+		<Copyright>MIT</Copyright>
+		<PackageTags>Maui, button, touch, ios, android, windows</PackageTags>
 		<Version>0.9.6-beta</Version>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup>
 	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
+	  <Description>Simple button for .NET7 MAUI</Description>
+	  <PackageProjectUrl>https://github.com/scriptBoris/ButtonSam.Maui</PackageProjectUrl>
+	  <PackageIcon>icon.png</PackageIcon>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <RepositoryUrl>https://github.com/scriptBoris/ButtonSam.Maui</RepositoryUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\Nuget\icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+
+	  <None Include="..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Update="Platforms\Android\ButtonHandler.cs">
