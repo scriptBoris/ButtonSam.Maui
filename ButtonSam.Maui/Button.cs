@@ -203,6 +203,9 @@ namespace ButtonSam.Maui
 
         public Size ArrangeChildren(Rect bounds)
         {
+#if WINDOWS
+            return ArrangeChildrenForWindows(bounds);
+#else
             if (Content is IView cv)
             {
                 double bw = 0;
@@ -223,15 +226,54 @@ namespace ButtonSam.Maui
             }
 
             return bounds.Size;
+#endif
+
         }
 
         public Size Measure(double widthConstraint, double heightConstraint)
         {
+#if WINDOWS
+            return MeasureForWindows(widthConstraint, heightConstraint);
+#else
             var size = Content?.Measure(widthConstraint, heightConstraint) ?? new Size(40, 20);
             size = size + new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
 
             if (BorderWidth > 0 && BorderColor != null)
                 size += new Size(BorderWidth*2, BorderWidth*2);
+
+            return size;
+#endif
+        }
+
+        private Size ArrangeChildrenForWindows(Rect bounds)
+        {
+            if (Content is IView cv)
+            {
+                double x = Padding.Left;
+                double y = Padding.Top;
+                double w = bounds.Width - Padding.HorizontalThickness;
+                double h = bounds.Height - Padding.VerticalThickness;
+
+                var r = new Rect(x, y, w, h);
+                cv.Arrange(r);
+            }
+
+            if (clickable is IView c)
+            {
+                c.Arrange(bounds);
+            }
+
+            return bounds.Size;
+        }
+
+
+        private Size MeasureForWindows(double widthConstraint, double heightConstraint)
+        {
+            double w = widthConstraint - Padding.HorizontalThickness;
+            double h = heightConstraint - Padding.VerticalThickness;
+
+            var size = Content?.Measure(w, h) ?? new Size(40, 20);
+            size += new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
 
             return size;
         }
