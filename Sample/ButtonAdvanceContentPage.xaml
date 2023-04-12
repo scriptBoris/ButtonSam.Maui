@@ -8,14 +8,14 @@
              Title="Advance content"
              Padding="10">
     <VerticalStackLayout>
-        <bsam:Button>
+        <bsam:Button BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
                     <Label Text="You authorized as"
                            TextColor="Gray"
                            FontSize="18"/>
                     <Label Text="Samuel Leroy Jackson"
-                           TextColor="White"
+                           TextColor="{AppThemeBinding Light=#333, Dark=#DDD}"
                            FontSize="20"/>
 
                     <Label Text="Online"

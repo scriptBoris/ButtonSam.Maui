@@ -23,5 +23,7 @@
         <Button Clicked="Button_Clicked_5"
                 Text="Custom tap color"/>
 
+        <Button Clicked="Button_Clicked_6"
+                Text="Global style test"/>
     </StackLayout>
 </ContentPage>
