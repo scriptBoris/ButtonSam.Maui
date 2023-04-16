@@ -25,7 +25,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
+	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
 	  <Description>Simple button for .NET7 MAUI</Description>
 	  <PackageProjectUrl>https://github.com/scriptBoris/ButtonSam.Maui</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
@@ -40,7 +40,7 @@
 	    <PackagePath>\</PackagePath>
 	  </None>
 
-	  <None Include="..\README.md" Pack="true" PackagePath="\"/>
+	  <None Include="..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
