@@ -1,4 +1,5 @@
-﻿using ButtonSam.Maui.Internal;
+﻿using ButtonSam.Maui.Core;
+using ButtonSam.Maui.Internal;
 using Microsoft.Maui.Handlers;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ButtonSam.Maui.Internal
 {
     public partial class ClickHandler : ViewHandler<Click, UIKit.UIView>
     {
-        private bool isPressed;
+        private bool isPressed => Button.IsPressed;
         public Button Button => (Button)VirtualView.Button;
 
         protected override UIView CreatePlatformView()
@@ -29,8 +30,10 @@ namespace ButtonSam.Maui.Internal
             switch (press.State)
             {
                 case UIGestureRecognizerState.Began:
-                    isPressed = true;
-                    Button.OnTapStart();
+                    Button.OnInteractive(new InteractiveEventArgs 
+                    { 
+                        State = GestureStatus.Started,
+                    });
                     break;
 
                 case UIGestureRecognizerState.Changed:
@@ -38,23 +41,26 @@ namespace ButtonSam.Maui.Internal
                     bool isInside = PlatformView.PointInside(coordinate, null);
                     if (!isInside && isPressed) 
                     {
-                        isPressed = false;
-                        Button.OnTapFinish();
+                        Button.OnInteractive(new InteractiveEventArgs 
+                        {
+                            State = GestureStatus.Canceled, 
+                        });
                     }
                     break;
 
                 case UIGestureRecognizerState.Ended:
-                    Button.OnTapFinish();
-                    if (isPressed)
-                        Button.ThrowTap();
-
-                    isPressed = false;
+                    Button.OnInteractive(new InteractiveEventArgs
+                    {
+                        State = GestureStatus.Completed,
+                    });
                     break;
 
                 case UIGestureRecognizerState.Cancelled:
                 case UIGestureRecognizerState.Failed:
-                    isPressed = false;
-                    Button.OnTapFinish();
+                    Button.OnInteractive(new InteractiveEventArgs
+                    {
+                        State = GestureStatus.Canceled,
+                    });
                     break;
                 default:
                     break;

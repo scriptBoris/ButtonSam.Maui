@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Handlers;
+﻿using ButtonSam.Maui.Core;
+using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -28,23 +29,26 @@ namespace ButtonSam.Maui.Internal
 
         private void N_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            isPressed = false;
-            Button.OnTapFinish();
+            Button.OnInteractive(new InteractiveEventArgs
+            {
+                State = GestureStatus.Canceled,
+            });
         }
 
         private void N_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            isPressed = true;
-            Button.OnTapStart();
+            Button.OnInteractive(new InteractiveEventArgs
+            {
+                State = GestureStatus.Started,
+            });
         }
 
         private void N_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            Button.OnTapFinish();
-            if (isPressed)
-                Button.ThrowTap();
-
-            isPressed = false;
+            Button.OnInteractive(new InteractiveEventArgs
+            {
+                State = GestureStatus.Completed,
+            });
         }
     }
 

@@ -13,6 +13,7 @@ using Android.Content.Res;
 using Android.Graphics.Drawables;
 using Android.Widget;
 using Microsoft.Maui.Platform;
+using ButtonSam.Maui.Core;
 
 namespace ButtonSam.Maui.Internal
 {
@@ -42,8 +43,15 @@ namespace ButtonSam.Maui.Internal
             rippleLayout.Right = PlatformView.Right;
         }
 
-        private void RippleStart(float x, float y)
+        public bool TryAnimationRippleStart(float x, float y)
         {
+            if (!IsSdk21)
+                return false;
+
+            float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+            x *= den;
+            y *= den;
+
             if (rippleLayout == null)
             {
                 rippleLayout = new VG(Context);
@@ -57,14 +65,18 @@ namespace ButtonSam.Maui.Internal
                 rippleLayout.Background?.SetHotspot(x,y);
 
             rippleLayout.Pressed = true;
+            return true;
         }
 
-        private void RippleEnd()
+        public bool TryAnimationRippleEnd()
         {
-            if (rippleLayout == null) 
-                return;
+            if (!IsSdk21)
+                return false;
 
-            rippleLayout.Pressed = false;
+            if (rippleLayout != null) 
+                rippleLayout.Pressed = false;
+
+            return true;
         }
 
         private RippleDrawable CreateRipple(Color color)
@@ -80,25 +92,6 @@ namespace ButtonSam.Maui.Internal
                 new int[][] { new int[] { } },
                 new int[] { pressedColor, }
             );
-        }
-
-        public void AnimationStart(float x, float y)
-        {
-            if (IsSdk21 && Button.TryRippleEffect)
-                RippleStart(x, y);
-            else
-                Button.OnTapStart();
-        }
-
-        public void AnimationFinish(bool needTrigger)
-        {
-            if (IsSdk21 && Button.TryRippleEffect)
-                RippleEnd();
-            else
-                Button.OnTapFinish();
-
-            if (needTrigger)
-                Button.ThrowTap();
         }
 
         public void UpdateTapColor(Color color)
@@ -137,39 +130,62 @@ namespace ButtonSam.Maui.Internal
             _touchSlop = ViewConfiguration.Get(host.Context)?.ScaledTouchSlop ?? 5;
         }
 
+        private Button Button => _host.Button;
+
         public override bool OnTouchEvent(MotionEvent e)
         {
-            float x = e.GetX();
-            float y = e.GetY();
+            float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+            float x = e.GetX() / den;
+            float y = e.GetY() / den;
 
             switch (e.ActionMasked)
             {
                 case MotionEventActions.Down:
-                    isPressedAndIdle = true;
-                    startX = x;
-                    startY = y;
-                    _host.AnimationStart(x, y);
+                    //isPressedAndIdle = true;
+                    //startX = x;
+                    //startY = y;
+                    //_host.AnimationStart(x, y);
+                    Button.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureStatus.Started,
+                    });
                     break;
 
                 case MotionEventActions.Move:
-                    float deltaX = Math.Abs(startX - x);
-                    float deltaY = Math.Abs(startY - y);
+                    //float deltaX = Math.Abs(startX - x);
+                    //float deltaY = Math.Abs(startY - y);
 
-                    if (deltaX > _touchSlop || deltaY > _touchSlop)
+                    //if (deltaX > _touchSlop || deltaY > _touchSlop)
+                    //{
+                    //    isPressedAndIdle = false;
+                    //    _host.AnimationFinish(false);
+                    //}
+                    Button.OnInteractive(new InteractiveEventArgs
                     {
-                        isPressedAndIdle = false;
-                        _host.AnimationFinish(false);
-                    }
+                        X = x,
+                        Y = y,
+                        State = GestureStatus.Running,
+                    });
                     break;
 
                 case MotionEventActions.Up:
-                    _host.AnimationFinish(isPressedAndIdle);
-                    isPressedAndIdle = false;
+                    Button.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureStatus.Completed,
+                    });
                     break;
 
                 case MotionEventActions.Cancel:
-                    _host.AnimationFinish(false);
-                    isPressedAndIdle = false;
+                    Button.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureStatus.Canceled,
+                    });
                     break;
 
                 default:

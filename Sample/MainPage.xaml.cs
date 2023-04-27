@@ -41,5 +41,10 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new ButtonGlobalStylePage());
     }
+
+    private void Button_Clicked_7(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonDisabledPage());
+    }
 }
 

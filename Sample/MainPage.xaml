@@ -25,5 +25,8 @@
 
         <Button Clicked="Button_Clicked_6"
                 Text="Global style test"/>
+
+        <Button Clicked="Button_Clicked_7"
+                Text="Disabled button"/>
     </StackLayout>
 </ContentPage>

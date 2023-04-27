@@ -82,6 +82,9 @@
 	  <MauiXaml Update="ButtonClickerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="ButtonDisabledPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="ButtonFixedSizePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

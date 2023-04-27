@@ -1,4 +1,5 @@
-﻿using ButtonSam.Maui.Internal;
+﻿using ButtonSam.Maui.Core;
+using ButtonSam.Maui.Internal;
 using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,9 @@ namespace ButtonSam.Maui
     [ContentProperty("Content")]
     public class Button : Layout, ILayoutManager
     {
+        private const float _touchSlop = 2;
+        private float startX;
+        private float startY;
         private View? clickable;
 
         public Button()
@@ -172,6 +176,19 @@ namespace ButtonSam.Maui
             set => SetValue(TryRippleEffectProperty, value);
         }
 
+        // is pressed
+        public static readonly BindableProperty IsPressedProperty = BindableProperty.Create(
+            nameof(IsPressed),
+            typeof(bool),
+            typeof(Button),
+            false
+        );
+        public bool IsPressed
+        {
+            get => (bool)GetValue(IsPressedProperty);
+            set => SetValue(IsPressedProperty, value);
+        }
+
         // content
         public static readonly BindableProperty ContentProperty = BindableProperty.Create(
             nameof(Content),
@@ -266,7 +283,6 @@ namespace ButtonSam.Maui
             return bounds.Size;
         }
 
-
         private Size MeasureForWindows(double widthConstraint, double heightConstraint)
         {
             double w = widthConstraint - Padding.HorizontalThickness;
@@ -295,25 +311,94 @@ namespace ButtonSam.Maui
             }
         }
 
-        public virtual void OnTapStart()
+        public virtual void OnAnimationStart()
         {
-            var b = base.BackgroundColor ?? Colors.Transparent;
-            this.ColorTo(b, TapColor, c => base.BackgroundColor = c, 100);
-        }
-
-        public virtual void OnTapFinish()
-        {
-            var b = base.BackgroundColor ?? Colors.Transparent;
-            this.ColorTo(b, BackgroundColor, c => base.BackgroundColor = c, 180);
-        }
-
-        internal void ThrowTap()
-        {
-            if (TapCommand == null)
+            if (!IsEnabled)
                 return;
 
-            if (TapCommand.CanExecute(TapCommandParameter))
-                TapCommand.Execute(TapCommandParameter);
+            bool isRipple = TryAnimationRippleStart(startX, startY);
+            if (!isRipple)
+            {
+                var b = base.BackgroundColor ?? Colors.Transparent;
+                this.ColorTo(b, TapColor, c => base.BackgroundColor = c, 100);
+            }
+        }
+
+        public virtual void OnAnimationFinish()
+        {
+            if (!IsEnabled && !IsPressed)
+                return;
+
+            bool isRipple = TryAnimationRippleFinish();
+            if (!isRipple)
+            {
+                var b = base.BackgroundColor ?? Colors.Transparent;
+                this.ColorTo(b, BackgroundColor, c => base.BackgroundColor = c, 180);
+            }
+        }
+
+        protected virtual bool TryAnimationRippleStart(float x, float y)
+        {
+#if ANDROID
+            if (TryRippleEffect && clickable?.Handler is ClickHandler h)
+                return h.TryAnimationRippleStart(startX, startY);
+#endif
+            return false;
+        }
+
+        protected virtual bool TryAnimationRippleFinish()
+        {
+#if ANDROID
+            if (TryRippleEffect && clickable?.Handler is ClickHandler h)
+                return h.TryAnimationRippleEnd();
+#endif
+            return false;
+        }
+
+        internal virtual void OnInteractive(InteractiveEventArgs args)
+        {
+            bool isPressedOld = IsPressed;
+
+            switch (args.State)
+            {
+                case GestureStatus.Started:
+                    IsPressed = true;
+                    startX = args.X;
+                    startY = args.Y;
+                    break;
+                case GestureStatus.Completed:
+                    IsPressed = false;
+                    break;
+                case GestureStatus.Canceled:
+                    IsPressed = false;
+                    break;
+                case GestureStatus.Running:
+                    float deltaX = Math.Abs(startX - args.X);
+                    float deltaY = Math.Abs(startY - args.Y);
+
+                    if (deltaX > _touchSlop || deltaY > _touchSlop)
+                        IsPressed = false;
+                    break;
+                default:
+                    break;
+            }
+
+            if (isPressedOld == IsPressed)
+                return;
+
+            if (IsPressed)
+                OnAnimationStart();
+            else
+                OnAnimationFinish();
+
+            if (isPressedOld && args.State == GestureStatus.Completed)
+            {
+                if (TapCommand == null || !IsEnabled)
+                    return;
+
+                if (TapCommand.CanExecute(TapCommandParameter))
+                    TapCommand.Execute(TapCommandParameter);
+            }
         }
 
         private void UpdateCornerRadius()
