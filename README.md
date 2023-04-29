@@ -3,6 +3,8 @@
 <img src="Images/windows11.gif" height="200"/>
 </p>
 
+[![NuGet](https://img.shields.io/nuget/v/ButtonSam.Maui.svg?label=NuGet)](https://www.nuget.org/packages/ButtonSam.Maui)
+
 # ButtonSam.Maui
 The .NET 7.0 library for create easy interactive UI
 - **Custom content**
