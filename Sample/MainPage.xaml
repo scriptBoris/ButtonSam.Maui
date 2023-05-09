@@ -28,5 +28,8 @@
 
         <Button Clicked="Button_Clicked_7"
                 Text="Disabled button"/>
+
+        <Button Clicked="Button_Clicked_8"
+                Text="With shadows"/>
     </StackLayout>
 </ContentPage>

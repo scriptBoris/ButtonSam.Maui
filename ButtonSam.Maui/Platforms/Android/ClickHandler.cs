@@ -31,6 +31,10 @@ namespace ButtonSam.Maui.Internal
             n.TouchDelegate = new GestureT(this, null, n);
             n.Clickable = true;
             n.LongClickable = true;
+
+            if (IsSdk21)
+                rippleLayout = CreateRippleLayout();
+
             return n;
         }
 
@@ -43,6 +47,16 @@ namespace ButtonSam.Maui.Internal
             rippleLayout.Right = PlatformView.Right;
         }
 
+        private VG CreateRippleLayout()
+        {
+            var rippleLayout = new VG(Context);
+            rippleLayout.Bottom = Super.Bottom;
+            rippleLayout.Right = Super.Right;
+            rippleLayout.Background = CreateRipple(Button.TapColor);
+            Super.AddView(rippleLayout, 0);
+            return rippleLayout;
+        }
+
         public bool TryAnimationRippleStart(float x, float y)
         {
             if (!IsSdk21)
@@ -53,13 +67,7 @@ namespace ButtonSam.Maui.Internal
             y *= den;
 
             if (rippleLayout == null)
-            {
-                rippleLayout = new VG(Context);
-                rippleLayout.Bottom = Super.Bottom;
-                rippleLayout.Right = Super.Right;
-                rippleLayout.Background = CreateRipple(Button.TapColor);
-                Super.AddView(rippleLayout, 0);
-            }
+                rippleLayout = CreateRippleLayout();
 
             if (rippleLayout.Width > 200 || rippleLayout.Height > 200)
                 rippleLayout.Background?.SetHotspot(x,y);
@@ -137,6 +145,12 @@ namespace ButtonSam.Maui.Internal
             float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
             float x = e.GetX() / den;
             float y = e.GetY() / den;
+
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"Coordinates: x={x}; y={y}");
+            System.Diagnostics.Debug.WriteLine($"Action: {e.Action}");
+            System.Diagnostics.Debug.WriteLine($"ActionMasked: {e.ActionMasked}");
+#endif
 
             switch (e.ActionMasked)
             {

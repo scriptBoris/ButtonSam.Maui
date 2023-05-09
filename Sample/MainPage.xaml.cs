@@ -46,5 +46,10 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new ButtonDisabledPage());
     }
+
+    private void Button_Clicked_8(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ButtonWithShadowsPage());
+    }
 }
 
