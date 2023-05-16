@@ -155,10 +155,6 @@ namespace ButtonSam.Maui.Internal
             switch (e.ActionMasked)
             {
                 case MotionEventActions.Down:
-                    //isPressedAndIdle = true;
-                    //startX = x;
-                    //startY = y;
-                    //_host.AnimationStart(x, y);
                     Button.OnInteractive(new InteractiveEventArgs
                     {
                         X = x,
@@ -168,14 +164,6 @@ namespace ButtonSam.Maui.Internal
                     break;
 
                 case MotionEventActions.Move:
-                    //float deltaX = Math.Abs(startX - x);
-                    //float deltaY = Math.Abs(startY - y);
-
-                    //if (deltaX > _touchSlop || deltaY > _touchSlop)
-                    //{
-                    //    isPressedAndIdle = false;
-                    //    _host.AnimationFinish(false);
-                    //}
                     Button.OnInteractive(new InteractiveEventArgs
                     {
                         X = x,

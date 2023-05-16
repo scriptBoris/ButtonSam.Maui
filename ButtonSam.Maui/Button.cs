@@ -19,7 +19,7 @@ namespace ButtonSam.Maui
     [ContentProperty("Content")]
     public class Button : Layout, ILayoutManager
     {
-        private const float _touchSlop = 2;
+        private const float _touchSlop = 10;
         private float startX;
         private float startY;
         private View? clickable;
@@ -301,7 +301,7 @@ namespace ButtonSam.Maui
                 Children.Remove(old);
 
             if (news != null)
-                Children.Add(news);
+                Children.Insert(0, news);
 
             // clickable
             if (clickable == null)
@@ -355,29 +355,71 @@ namespace ButtonSam.Maui
             return false;
         }
 
+        protected virtual void HandleInteractiveStarted(HandleInteractiveStartedArgs args)
+        {
+            args.StartX = args.Input.X;
+            args.StartY = args.Input.Y;
+            args.IsPressed = true;
+        }
+
+        protected virtual void HandleInteractiveCompleted(HandleInteractiveCompletedArgs args)
+        {
+            args.IsPressed = false;
+        }
+
+        protected virtual void HandleInteractiveCanceled(HandleInteractiveCanceledArgs args)
+        {
+            args.IsPressed = false;
+        }
+
+        protected virtual void HandleInteractiveRunning(HandleInteractiveRunningArgs args)
+        {
+            float deltaX = Math.Abs(startX - args.Input.X);
+            float deltaY = Math.Abs(startY - args.Input.Y);
+
+            if (deltaX > _touchSlop || deltaY > _touchSlop)
+                args.IsPressed = false;
+        }
+
         internal virtual void OnInteractive(InteractiveEventArgs args)
         {
             bool isPressedOld = IsPressed;
-
             switch (args.State)
             {
                 case GestureStatus.Started:
-                    IsPressed = true;
-                    startX = args.X;
-                    startY = args.Y;
+                    var startedArgs = new HandleInteractiveStartedArgs { Input = args };
+                    HandleInteractiveStarted(startedArgs);
+
+                    if (startedArgs.StartX != null)
+                        startX = startedArgs.StartX.Value;
+
+                    if (startedArgs.StartY != null)
+                        startY = startedArgs.StartY.Value;
+
+                    if (startedArgs.IsPressed != null)
+                        IsPressed = startedArgs.IsPressed.Value;
+
                     break;
                 case GestureStatus.Completed:
-                    IsPressed = false;
+                    var completedArgs = new HandleInteractiveCompletedArgs { Input = args };
+                    HandleInteractiveCompleted(completedArgs);
+
+                    if (completedArgs.IsPressed != null)
+                        IsPressed = completedArgs.IsPressed.Value;
                     break;
                 case GestureStatus.Canceled:
-                    IsPressed = false;
+                    var cancelArgs = new HandleInteractiveCanceledArgs { Input = args };
+                    HandleInteractiveCanceled(cancelArgs);
+
+                    if (cancelArgs.IsPressed != null)
+                        IsPressed = cancelArgs.IsPressed.Value;
                     break;
                 case GestureStatus.Running:
-                    float deltaX = Math.Abs(startX - args.X);
-                    float deltaY = Math.Abs(startY - args.Y);
+                    var runningArgs = new HandleInteractiveRunningArgs { Input = args };
+                    HandleInteractiveRunning(runningArgs);
 
-                    if (deltaX > _touchSlop || deltaY > _touchSlop)
-                        IsPressed = false;
+                    if (runningArgs.IsPressed != null)
+                        IsPressed = runningArgs.IsPressed.Value;
                     break;
                 default:
                     break;

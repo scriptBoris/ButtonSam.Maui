@@ -12,7 +12,6 @@ namespace ButtonSam.Maui.Internal
 {
     public partial class ClickHandler : ViewHandler<Click, Microsoft.UI.Xaml.Controls.Panel>
     {
-        private bool isPressed;
         public Button Button => VirtualView.Button;
 
         protected override Panel CreatePlatformView()
