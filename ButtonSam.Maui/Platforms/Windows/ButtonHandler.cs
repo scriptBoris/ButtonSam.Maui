@@ -69,7 +69,7 @@ namespace ButtonSam.Maui
             UpdateBorderWidth(Proxy.BorderWidth);
             UpdateBorderColor(Proxy.BorderColor);
 
-            var defaultColor = (Color)Button.BackgroundColorProperty.DefaultValue;
+            var defaultColor = Proxy.BackgroundColor;
             Wrapper!.Background = defaultColor.ToPlatform();
         }
     }
