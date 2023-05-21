@@ -218,23 +218,22 @@ namespace ButtonSam.Maui
             return this;
         }
 
+#if !WINDOWS
         public Size ArrangeChildren(Rect bounds)
         {
-#if WINDOWS
-            return ArrangeChildrenForWindows(bounds);
-#else
             if (Content is IView cv)
             {
-                double bw = 0;
-
-                if (BorderWidth > 0 && BorderColor != null)
-                    bw = BorderWidth;
-
+                double bw = (BorderWidth > 0 && BorderColor != null) ? BorderWidth : 0;
                 double x = Padding.Left + bw;
                 double y = Padding.Top + bw;
-                double w = bounds.Width - (Padding.HorizontalThickness + bw);
-                double h = bounds.Height - (Padding.VerticalThickness + bw);
-                cv.Arrange(new Rect(x, y, w, h));
+                double w = bounds.Width - (Padding.HorizontalThickness + bw * 2);
+                double h = bounds.Height - (Padding.VerticalThickness + bw * 2);
+
+                if (w < cv.DesiredSize.Width) w = cv.DesiredSize.Width;
+                if (h < cv.DesiredSize.Height) h = cv.DesiredSize.Height;
+
+                var rect = new Rect(x, y, w, h);
+                cv.Arrange(rect);
             }
 
             if (clickable is IView c)
@@ -243,26 +242,24 @@ namespace ButtonSam.Maui
             }
 
             return bounds.Size;
-#endif
-
         }
 
         public Size Measure(double widthConstraint, double heightConstraint)
         {
-#if WINDOWS
-            return MeasureForWindows(widthConstraint, heightConstraint);
-#else
-            var size = Content?.Measure(widthConstraint, heightConstraint) ?? new Size(40, 20);
-            size = size + new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
+            double bw = BorderWidth > 0 && BorderColor != null ? BorderWidth * 2 : 0;
+            var w = widthConstraint - (Padding.HorizontalThickness + bw);
+            var h = heightConstraint - (Padding.VerticalThickness + bw);
 
-            if (BorderWidth > 0 && BorderColor != null)
-                size += new Size(BorderWidth*2, BorderWidth*2);
+            var size = Content?.Measure(w, h) ?? new Size(40, 20);
+            size += new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
+            size += new Size(bw, bw);
 
             return size;
-#endif
         }
+#endif
 
-        private Size ArrangeChildrenForWindows(Rect bounds)
+#if WINDOWS
+        public Size ArrangeChildren(Rect bounds)
         {
             if (Content is IView cv)
             {
@@ -270,6 +267,9 @@ namespace ButtonSam.Maui
                 double y = Padding.Top;
                 double w = bounds.Width - Padding.HorizontalThickness;
                 double h = bounds.Height - Padding.VerticalThickness;
+
+                if (w < cv.DesiredSize.Width) w = cv.DesiredSize.Width;
+                if (h < cv.DesiredSize.Height) h = cv.DesiredSize.Height;
 
                 var r = new Rect(x, y, w, h);
                 cv.Arrange(r);
@@ -283,7 +283,7 @@ namespace ButtonSam.Maui
             return bounds.Size;
         }
 
-        private Size MeasureForWindows(double widthConstraint, double heightConstraint)
+        public Size Measure(double widthConstraint, double heightConstraint)
         {
             double w = widthConstraint - Padding.HorizontalThickness;
             double h = heightConstraint - Padding.VerticalThickness;
@@ -293,6 +293,7 @@ namespace ButtonSam.Maui
 
             return size;
         }
+#endif
 
         private void Redraw(View? old, View? news)
         {
@@ -499,7 +500,7 @@ namespace ButtonSam.Maui
             self.AbortAnimation("ColorTo");
         }
 
-        static Task<bool> ColorAnimation(VisualElement element, string name, Func<double, Color> transform, Action<Color> callback, uint length, Easing easing)
+        private static Task<bool> ColorAnimation(VisualElement element, string name, Func<double, Color> transform, Action<Color> callback, uint length, Easing easing)
         {
             easing = easing ?? Easing.Linear;
             var taskCompletionSource = new TaskCompletionSource<bool>();
