@@ -20,7 +20,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Copyright>MIT</Copyright>
 		<PackageTags>Maui, button, touch, ios, android, windows</PackageTags>
-		<Version>1.0.3</Version>
+		<Version>1.1.0</Version>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 	</PropertyGroup>
 
