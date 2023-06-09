@@ -8,8 +8,8 @@ namespace ButtonSam.Maui.Core
 {
     public struct InteractiveEventArgs
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public required GestureStatus State { get; set; }
+        public required float X { get; set; }
+        public required float Y { get; set; }
+        public required InteractiveStates State { get; set; }
     }
 }

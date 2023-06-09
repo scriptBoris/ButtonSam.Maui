@@ -27,12 +27,18 @@ namespace ButtonSam.Maui.Internal
 
         public void OnTap(UILongPressGestureRecognizer press)
         {
+            var point = press.LocationInView(press.View);
+            float x = (float)point.X;
+            float y = (float)point.Y;
+
             switch (press.State)
             {
                 case UIGestureRecognizerState.Began:
                     Button.OnInteractive(new InteractiveEventArgs 
                     { 
-                        State = GestureStatus.Started,
+                        X = x,
+                        Y = y,
+                        State = InteractiveStates.Pressed,
                     });
                     break;
 
@@ -43,7 +49,9 @@ namespace ButtonSam.Maui.Internal
                     {
                         Button.OnInteractive(new InteractiveEventArgs 
                         {
-                            State = GestureStatus.Canceled, 
+                            X = x,
+                            Y = y,
+                            State = InteractiveStates.ReleaseCanceled, 
                         });
                     }
                     break;
@@ -51,7 +59,9 @@ namespace ButtonSam.Maui.Internal
                 case UIGestureRecognizerState.Ended:
                     Button.OnInteractive(new InteractiveEventArgs
                     {
-                        State = GestureStatus.Completed,
+                        X = x,
+                        Y = y,
+                        State = InteractiveStates.ReleaseCompleted,
                     });
                     break;
 
@@ -59,7 +69,9 @@ namespace ButtonSam.Maui.Internal
                 case UIGestureRecognizerState.Failed:
                     Button.OnInteractive(new InteractiveEventArgs
                     {
-                        State = GestureStatus.Canceled,
+                        X = x,
+                        Y = y,
+                        State = InteractiveStates.ReleaseCanceled,
                     });
                     break;
                 default:

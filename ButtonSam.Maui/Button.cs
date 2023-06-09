@@ -19,7 +19,11 @@ namespace ButtonSam.Maui
     [ContentProperty("Content")]
     public class Button : Layout, ILayoutManager
     {
+#if __MOBILE__
         private const float _touchSlop = 10;
+#else
+        private const float _touchSlop = 100000;
+#endif
         private float startX;
         private float startY;
         private View? clickable;
@@ -189,6 +193,19 @@ namespace ButtonSam.Maui
             set => SetValue(IsPressedProperty, value);
         }
 
+        // is mouse over
+        public static readonly BindableProperty IsMouseOverProperty = BindableProperty.Create(
+            nameof(IsMouseOver),
+            typeof(bool),
+            typeof(Button),
+            false
+        );
+        public bool IsMouseOver
+        {
+            get => (bool)GetValue(IsMouseOverProperty);
+            set => SetValue(IsMouseOverProperty, value);
+        }
+
         // content
         public static readonly BindableProperty ContentProperty = BindableProperty.Create(
             nameof(Content),
@@ -206,6 +223,12 @@ namespace ButtonSam.Maui
             set => SetValue(ContentProperty, value);
         }
         #endregion bindable props
+
+        protected Color? MouseOverColor { get; set; }
+        protected bool IsRippleEffectSupport { get; }
+#if ANDROID
+        = Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Lollipop;
+#endif
 
         protected override void OnParentSet()
         {
@@ -333,8 +356,9 @@ namespace ButtonSam.Maui
             bool isRipple = TryAnimationRippleFinish();
             if (!isRipple)
             {
-                var b = base.BackgroundColor ?? Colors.Transparent;
-                this.ColorTo(b, BackgroundColor, c => base.BackgroundColor = c, 180);
+                var from = base.BackgroundColor ?? Colors.Transparent;
+                var to = MouseOverColor ?? BackgroundColor;
+                this.ColorTo(from, to, c => base.BackgroundColor = c, 180);
             }
         }
 
@@ -380,6 +404,22 @@ namespace ButtonSam.Maui
 
             if (deltaX > _touchSlop || deltaY > _touchSlop)
                 args.IsPressed = false;
+
+            if (!IsEnabled || !IsMouseOver || IsPressed || IsRippleEffectSupport)
+                return;
+
+            MouseOverColor = TapColor.MultiplyAlpha(0.3f);
+            base.BackgroundColor = MouseOverColor;
+        }
+
+        protected virtual void HandleInteractiveRunningCanceled(HandleInteractiveRunningArgs args)
+        {
+            if (MouseOverColor == null)
+                return;
+
+            this.CancelAnimation();
+            base.BackgroundColor = BackgroundColor;
+            MouseOverColor = null;
         }
 
         internal virtual void OnInteractive(InteractiveEventArgs args)
@@ -387,7 +427,7 @@ namespace ButtonSam.Maui
             bool isPressedOld = IsPressed;
             switch (args.State)
             {
-                case GestureStatus.Started:
+                case InteractiveStates.Pressed:
                     var startedArgs = new HandleInteractiveStartedArgs { Input = args };
                     HandleInteractiveStarted(startedArgs);
 
@@ -401,26 +441,32 @@ namespace ButtonSam.Maui
                         IsPressed = startedArgs.IsPressed.Value;
 
                     break;
-                case GestureStatus.Completed:
+                case InteractiveStates.ReleaseCompleted:
                     var completedArgs = new HandleInteractiveCompletedArgs { Input = args };
                     HandleInteractiveCompleted(completedArgs);
 
                     if (completedArgs.IsPressed != null)
                         IsPressed = completedArgs.IsPressed.Value;
                     break;
-                case GestureStatus.Canceled:
+                case InteractiveStates.ReleaseCanceled:
                     var cancelArgs = new HandleInteractiveCanceledArgs { Input = args };
                     HandleInteractiveCanceled(cancelArgs);
 
                     if (cancelArgs.IsPressed != null)
                         IsPressed = cancelArgs.IsPressed.Value;
                     break;
-                case GestureStatus.Running:
+                case InteractiveStates.Running:
                     var runningArgs = new HandleInteractiveRunningArgs { Input = args };
+                    IsMouseOver = true;
                     HandleInteractiveRunning(runningArgs);
 
                     if (runningArgs.IsPressed != null)
                         IsPressed = runningArgs.IsPressed.Value;
+                    break;
+                case InteractiveStates.RunningCanceled:
+                    IsMouseOver = false;
+                    var runningCanceledArgs = new HandleInteractiveRunningArgs { Input = args };
+                    HandleInteractiveRunningCanceled(runningCanceledArgs);
                     break;
                 default:
                     break;
@@ -434,7 +480,7 @@ namespace ButtonSam.Maui
             else
                 OnAnimationFinish();
 
-            if (isPressedOld && args.State == GestureStatus.Completed)
+            if (isPressedOld && args.State == InteractiveStates.ReleaseCompleted)
             {
                 if (TapCommand == null || !IsEnabled)
                     return;

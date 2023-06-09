@@ -159,7 +159,7 @@ namespace ButtonSam.Maui.Internal
                     {
                         X = x,
                         Y = y,
-                        State = GestureStatus.Started,
+                        State = InteractiveStates.Pressed,
                     });
                     break;
 
@@ -168,7 +168,7 @@ namespace ButtonSam.Maui.Internal
                     {
                         X = x,
                         Y = y,
-                        State = GestureStatus.Running,
+                        State = InteractiveStates.Running,
                     });
                     break;
 
@@ -177,7 +177,7 @@ namespace ButtonSam.Maui.Internal
                     {
                         X = x,
                         Y = y,
-                        State = GestureStatus.Completed,
+                        State = InteractiveStates.ReleaseCompleted,
                     });
                     break;
 
@@ -186,7 +186,7 @@ namespace ButtonSam.Maui.Internal
                     {
                         X = x,
                         Y = y,
-                        State = GestureStatus.Canceled,
+                        State = InteractiveStates.ReleaseCanceled,
                     });
                     break;
 
