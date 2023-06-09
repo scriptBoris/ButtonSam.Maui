@@ -18,11 +18,11 @@ using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
 using Android.Graphics.Drawables;
 
-namespace ButtonSam.Maui
+namespace ButtonSam.Maui.Core
 {
     public partial class ButtonHandler : LayoutHandler
     {
-        public Button Proxy => (Button)VirtualView;
+        public ButtonBase Proxy => (ButtonBase)VirtualView;
         public float CornerRadius { get; private set; }
 
         public void UpdateCornerRadius(double radius)

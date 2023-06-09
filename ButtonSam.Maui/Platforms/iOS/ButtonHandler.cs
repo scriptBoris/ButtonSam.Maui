@@ -4,11 +4,11 @@ using CoreGraphics;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
-namespace ButtonSam.Maui
+namespace ButtonSam.Maui.Core
 {
     public partial class ButtonHandler : LayoutHandler
     {
-        public Button Proxy => (Button)VirtualView;
+        public ButtonBase Proxy => (ButtonBase)VirtualView;
 
         protected override LayoutView CreatePlatformView()
         {

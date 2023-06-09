@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ButtonSam.Maui.Core;
 
-public enum InteractiveStates
+public enum InputTypes
 {
-    Pressed,
-    Running,
-    RunningCanceled,
-    ReleaseCompleted,
-    ReleaseCanceled,
+    None,
+    Touch,
+    MouseLeftButton,
+    MouseRightButton,
+    MouseMiddleButton,
 }

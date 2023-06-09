@@ -11,11 +11,11 @@ using System.ComponentModel;
 using Microsoft.UI.Xaml.Hosting;
 using Windows.Devices.Radios;
 
-namespace ButtonSam.Maui
+namespace ButtonSam.Maui.Core
 {
     public partial class ButtonHandler : LayoutHandler
     {
-        public Button Proxy => (Button)VirtualView;
+        public ButtonBase Proxy => (ButtonBase)VirtualView;
         public bool IsUseBorder => Proxy.BorderColor != null && Proxy.BorderWidth > 0;
         public override bool NeedsContainer => true;
         public WrapperView? Wrapper => ContainerView as WrapperView;
