@@ -11,7 +11,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <ContentView Padding="10">
-                        <sbutton:Button WidthRequest="300">
+                        <sbutton:Button>
                             <Label Text="{Binding .}" />
                         </sbutton:Button>
                     </ContentView>

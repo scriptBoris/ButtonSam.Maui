@@ -269,7 +269,10 @@ namespace ButtonSam.Maui.Core
             double w = widthConstraint - Padding.HorizontalThickness;
             double h = heightConstraint - Padding.VerticalThickness;
 
-            var size = Content?.Measure(w, h) ?? new Size(40, 20);
+            var size = new Size(40,20);
+            if (Content is IView content)
+                size = content.Measure(w, h);
+
             size += new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
 
             return size;
