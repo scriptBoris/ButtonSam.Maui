@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="Sample.MultipleButtonsPage"
+             Title="MultipleButtonsPage">
+    <StackLayout>
+        <CollectionView x:Name="collectionView"
+                        ItemSizingStrategy="MeasureFirstItem"
+                        VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ContentView Padding="10">
+                        <sbutton:Button WidthRequest="300">
+                            <Label Text="{Binding .}" />
+                        </sbutton:Button>
+                    </ContentView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>
