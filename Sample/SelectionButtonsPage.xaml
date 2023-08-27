@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:custom="clr-namespace:Sample.Custom"
+             x:Class="Sample.SelectionButtonsPage"
+             x:Name="root"
+             Title="SelectionButtonsPage">
+    <StackLayout x:Name="stackLayout"
+                 Padding="10"
+                 Spacing="10">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate>
+                <custom:SelectionButton IsSelected="{Binding IsSelected}"
+                                        TapCommand="{Binding CommandSelectedItem, Source={Reference root}}"
+                                        TapCommandParameter="{Binding .}">
+                    <Label Text="{Binding Name}" />
+                </custom:SelectionButton>
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </StackLayout>
+</ContentPage>

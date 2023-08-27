@@ -35,6 +35,9 @@
 
             <Button Text="Multiple buttons" 
                     Clicked="Button_Clicked_9"/>
+
+            <Button Text="Selection buttons"
+                    Clicked="Button_Clicked_10"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>
