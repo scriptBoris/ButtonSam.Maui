@@ -13,6 +13,7 @@ namespace ButtonSam.Maui;
 public class Button : ButtonBase
 {
     protected Color? MouseOverColor { get; set; }
+    protected Color? MouseTapColor { get; set; }
 
     protected bool IsRippleEffectSupport
     {
@@ -34,8 +35,14 @@ public class Button : ButtonBase
         bool isRipple = TryAnimationRippleStart(StartX, StartY);
         if (!isRipple)
         {
-            var from = CurrentBackgroundColor ?? Colors.Transparent;
-            this.ColorTo(from, TapColor, c => ChangeBackgroundColor(c), 100);
+            var from = MouseOverColor ?? BackgroundColor;
+            var to = TapColor;
+
+            if (!IsRippleEffectSupport)
+                to = TapColor.MultiplyAlpha(0.5f);
+
+            MouseTapColor = to;
+            this.ColorTo(from, to, c => ChangeBackgroundColor(c), 100);
         }
     }
 
@@ -47,8 +54,8 @@ public class Button : ButtonBase
         bool isRipple = TryAnimationRippleFinish();
         if (!isRipple)
         {
-            var from = CurrentBackgroundColor ?? Colors.Transparent;
-            var to = MouseOverColor ?? BackgroundColor;
+            var from = MouseTapColor;
+            var to = MouseOverColor ?? Colors.Transparent;
             this.ColorTo(from, to, c => ChangeBackgroundColor(c), 180);
         }
     }
@@ -136,7 +143,7 @@ public class Button : ButtonBase
 
     protected virtual void AnimationMouseOverStart()
     {
-        MouseOverColor = TapColor.MultiplyAlpha(0.3f);
+        MouseOverColor = TapColor.MultiplyAlpha(0.2f);
         ChangeBackgroundColor(MouseOverColor);
     }
 
@@ -144,6 +151,6 @@ public class Button : ButtonBase
     {
         MouseOverColor = null;
         this.CancelAnimation();
-        ChangeBackgroundColor(BackgroundColor);
+        ChangeBackgroundColor(null);
     }
 }

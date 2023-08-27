@@ -10,11 +10,6 @@ using System.Windows.Input;
 
 namespace ButtonSam.Maui.Core
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public partial class ButtonHandler
-    {
-    }
-
     [ContentProperty("Content")]
     public abstract class ButtonBase : Layout, ILayoutManager
     {
@@ -24,29 +19,31 @@ namespace ButtonSam.Maui.Core
         protected const float _touchSlop = 100000;
 #endif
 
+        internal static Color DefaultBackgroundColor = Color.FromArgb("#323232");
+
         public ButtonBase()
         {
             IsClippedToBounds = true;
         }
 
         #region bindable props
-        // background color
-        public new static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(
-            nameof(BackgroundColor),
-            typeof(Color),
-            typeof(ButtonBase),
-            Color.FromArgb("#323232"),
-            propertyChanged: (b, o, n) =>
-            {
-                if (b is ButtonBase self)
-                    self.ChangeBackgroundColor((Color)n);
-            }
-        );
-        public new Color BackgroundColor
-        {
-            get => (Color)GetValue(BackgroundColorProperty);
-            set => SetValue(BackgroundColorProperty, value);
-        }
+        //// background color
+        //public new static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(
+        //    nameof(BackgroundColor),
+        //    typeof(Color),
+        //    typeof(ButtonBase),
+        //    Color.FromArgb("#323232"),
+        //    propertyChanged: (b, o, n) =>
+        //    {
+        //        if (b is ButtonBase self)
+        //            self.ChangeBackgroundColor((Color)n);
+        //    }
+        //);
+        //public new Color BackgroundColor
+        //{
+        //    get => (Color)GetValue(BackgroundColorProperty);
+        //    set => SetValue(BackgroundColorProperty, value);
+        //}
 
         // padding
         public new static readonly BindableProperty PaddingProperty = BindableProperty.Create(
@@ -221,7 +218,12 @@ namespace ButtonSam.Maui.Core
         #endregion bindable props
 
         #region props
-        protected Color CurrentBackgroundColor => base.BackgroundColor;
+        protected new Color BackgroundColor
+        {
+            get => base.BackgroundColor ?? DefaultBackgroundColor;
+            set => base.BackgroundColor = value;
+        }
+
         protected View? ClickableView { get; private set; }
 
         protected float StartX { get; set; }
@@ -412,9 +414,10 @@ namespace ButtonSam.Maui.Core
                 TapCommand.Execute(TapCommandParameter);
         }
 
-        protected void ChangeBackgroundColor(Color color)
+        protected void ChangeBackgroundColor(Color? color)
         {
-            base.BackgroundColor = color;
+            if (Handler is IButtonHandler bh)
+                bh.SetAnimLayerColor(color);
         }
 
         private void UpdateCornerRadius()

@@ -7,16 +7,16 @@
              x:DataType="local:ButtonClickerPage"
              Title="Clicker"
              Padding="10">
-    <StackLayout Spacing="10">
-        <Label Text="{Binding Test}"/>
+    <StackLayout Spacing="50">
+        <Label Text="{Binding Test}" />
         <bsam:Button TapCommand="{Binding CommandTap}">
             <StackLayout Spacing="10">
-                <Image Source="dotnet_bot.png"
-                       MaximumHeightRequest="140"
-                       MaximumWidthRequest="140"/>
-                <Label Text="Hello world"
-                       HorizontalTextAlignment="Center"
-                       TextColor="White"/>
+                <Image MaximumHeightRequest="140"
+                       MaximumWidthRequest="140"
+                       Source="dotnet_bot.png" />
+                <Label HorizontalTextAlignment="Center"
+                       Text="Hello world"
+                       TextColor="White" />
             </StackLayout>
         </bsam:Button>
     </StackLayout>
