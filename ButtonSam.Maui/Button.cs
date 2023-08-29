@@ -34,35 +34,37 @@ public class Button : ButtonBase
     protected override void OnPropertyChanged(string propertyName)
     {
         base.OnPropertyChanged(propertyName);
-        if (propertyName == BackgroundColorProperty.PropertyName)
+        switch (propertyName)
         {
-            UpdateMouseOverColor();
-            UpdateEndAnimationColor();
+            case nameof(BackgroundColor):
+            case nameof(TapColor):
+                UpdateMouseOverColor();
+                UpdateEndAnimationColor();
+                if (IsAnimating || IsPressed)
+                    AnimationFrame(animationProgress);
+                break;
+            default:
+                break;
         }
+    }
+
+    private void AnimationFrame(double x)
+    {
+        var from = mouseOverColor ?? BackgroundColor;
+        var to = endAnimationColor;
+        var result = from.ApplyTint(to, x);
+        DirectChangeBackgroundColor(result);
+        animationProgress = x;
     }
 
     protected virtual Task<bool> MauiAnimationPressed()
     {
-        return this.TransitAnimation(animationName, animationProgress, 1, 180, Easing.Default, (x) =>
-        {
-            var from = mouseOverColor ?? BackgroundColor;
-            var to = endAnimationColor;
-            var result = from.ApplyTint(to, x);
-            DirectChangeBackgroundColor(result);
-            animationProgress = x;
-        });
+        return this.TransitAnimation(animationName, animationProgress, 1, 180, Easing.Default, AnimationFrame);
     }
 
     protected virtual Task<bool> MauiAnimationReleased()
     {
-        return this.TransitAnimation(animationName, animationProgress, 0, 180, Easing.Default, (x) =>
-        {
-            var start = mouseOverColor ?? BackgroundColor;
-            var end = endAnimationColor;
-            var result = start.ApplyTint(end, x);
-            DirectChangeBackgroundColor(result);
-            animationProgress = x;
-        });
+        return this.TransitAnimation(animationName, animationProgress, 0, 180, Easing.Default, AnimationFrame);
     }
 
     public virtual async void OnAnimationStart()

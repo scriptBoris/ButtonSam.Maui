@@ -6,7 +6,7 @@ using Microsoft.Maui.Platform;
 
 namespace ButtonSam.Maui.Core
 {
-    public partial class ButtonHandler : LayoutHandler
+    public partial class ButtonHandler : LayoutHandler, IButtonHandler
     {
         public ButtonBase Proxy => (ButtonBase)VirtualView;
 
@@ -22,7 +22,8 @@ namespace ButtonSam.Maui.Core
 
             if (PlatformView.BackgroundColor == null) 
             {
-                PlatformView.BackgroundColor = Proxy.BackgroundColor.ToPlatform();
+                PlatformView.BackgroundColor = 
+                    (Proxy.BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ToPlatform();
             }
         }
 
@@ -43,6 +44,26 @@ namespace ButtonSam.Maui.Core
             }
 
             layer.CornerRadius = (float)Proxy.CornerRadius;
+        }
+
+        public bool OverrideBackgroundColor(Color color)
+        {
+            if (PlatformView != null)
+            {
+                PlatformView.BackgroundColor =
+                    (color ?? ButtonBase.DefaultBackgroundColor).ToPlatform();
+            }
+            return true;
+        }
+
+        public bool OverrideAdd(object? value)
+        {
+            return false;
+        }
+
+        public bool OverrideInsert(object? value)
+        {
+            return false;
         }
     }
 
