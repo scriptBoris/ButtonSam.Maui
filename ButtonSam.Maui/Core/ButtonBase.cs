@@ -271,7 +271,7 @@ namespace ButtonSam.Maui.Core
             double w = widthConstraint - Padding.HorizontalThickness;
             double h = heightConstraint - Padding.VerticalThickness;
 
-            var size = new Size(40,20);
+            var size = new Size(40, 20);
             if (Content is IView content)
                 size = content.Measure(w, h);
 
@@ -414,10 +414,10 @@ namespace ButtonSam.Maui.Core
                 TapCommand.Execute(TapCommandParameter);
         }
 
-        protected void ChangeBackgroundColor(Color? color)
+        protected void DirectChangeBackgroundColor(Color color)
         {
             if (Handler is IButtonHandler bh)
-                bh.SetAnimLayerColor(color);
+                bh.OverrideBackgroundColor(color);
         }
 
         private void UpdateCornerRadius()
@@ -461,28 +461,30 @@ namespace ButtonSam.Maui.Core
 
     public static class ViewExtensions
     {
-        public static Task<bool> ColorTo(this VisualElement self, Color fromColor, Color toColor, Action<Color> callback, uint length = 250, Easing easing = null)
+        public static Task<bool> TransitAnimation(this View view,
+            string animName,
+            double start,
+            double end,
+            uint length,
+            Easing? easing,
+            Action<double> f)
         {
-            Func<double, Color> transform = (t) =>
-                Color.FromRgba(fromColor.Red + t * (toColor.Red - fromColor.Red),
-                               fromColor.Green + t * (toColor.Green - fromColor.Green),
-                               fromColor.Blue + t * (toColor.Blue - fromColor.Blue),
-                               fromColor.Alpha + t * (toColor.Alpha - fromColor.Alpha));
-            return ColorAnimation(self, "ColorTo", transform, callback, length, easing);
-        }
-
-        public static void CancelAnimation(this VisualElement self)
-        {
-            self.AbortAnimation("ColorTo");
-        }
-
-        private static Task<bool> ColorAnimation(VisualElement element, string name, Func<double, Color> transform, Action<Color> callback, uint length, Easing easing)
-        {
-            easing = easing ?? Easing.Linear;
             var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            element.Animate<Color>(name, transform, callback, 16, length, easing, (v, c) => taskCompletionSource.SetResult(c));
+            view.Animate(animName, f, start, end, length: length, easing: easing, finished: (x, b) =>
+            {
+                taskCompletionSource.SetResult(!b);
+            });
             return taskCompletionSource.Task;
+        }
+
+        public static Color ApplyTint(this Color from, Color to, double percent)
+        {
+            return Color.FromRgba(
+                from.Red + percent * (to.Red - from.Red),
+                from.Green + percent * (to.Green - from.Green),
+                from.Blue + percent * (to.Blue - from.Blue),
+                from.Alpha + percent * (to.Alpha - from.Alpha)
+            );
         }
     }
 }

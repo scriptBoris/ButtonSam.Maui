@@ -12,7 +12,6 @@ namespace ButtonSam.Maui.Core
         bool OverrideBackgroundColor(Color color);
         bool OverrideAdd(object? value);
         bool OverrideInsert(object? value);
-        void SetAnimLayerColor(Color? color);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

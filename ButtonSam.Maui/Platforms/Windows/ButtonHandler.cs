@@ -117,11 +117,5 @@ namespace ButtonSam.Maui.Core
 
             return true;
         }
-
-        public void SetAnimLayerColor(Color? color)
-        {
-            if (animLayer != null)
-                animLayer.Fill = color?.ToPlatform();
-        }
     }
 }

@@ -20,10 +20,27 @@ using Android.Graphics.Drawables;
 
 namespace ButtonSam.Maui.Core
 {
-    public partial class ButtonHandler : LayoutHandler
+    public partial class ButtonHandler : LayoutHandler, IButtonHandler
     {
         public ButtonBase Proxy => (ButtonBase)VirtualView;
         public float CornerRadius { get; private set; }
+
+        public bool OverrideAdd(object? value)
+        {
+            return false;
+        }
+
+        public bool OverrideBackgroundColor(Microsoft.Maui.Graphics.Color color)
+        {
+            if (PlatformView is ButtonLayout buttonLayout)
+                buttonLayout.SetBackgroundColor(color);
+            return true;
+        }
+
+        public bool OverrideInsert(object? value)
+        {
+            return false;
+        }
 
         public void UpdateCornerRadius(double radius)
         {
@@ -45,25 +62,15 @@ namespace ButtonSam.Maui.Core
         private readonly APath _path = new APath();
         //private readonly ARectF _bounds = new ARectF();
         private readonly ButtonHandler _handler;
+        private readonly ColorDrawable _backgroundDrawable;
         private double den;
 
         public ButtonLayout(ButtonHandler handler, Context context) : base(context)
         {
             _handler = handler;
-            Init(context, null, 0);
-        }
-
-        private void Init(Context context, IAttributeSet? attrs, int defStyle)
-        {
             den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
-            //_paint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.DstIn));
-
-            if (Background == null)
-            {
-                var defaultColor = (Microsoft.Maui.Graphics.Color)Button.BackgroundColorProperty.DefaultValue;
-                var drw = new ColorDrawable(defaultColor.ToPlatform());
-                Background = drw;
-            }
+            _backgroundDrawable = new ColorDrawable(ButtonBase.DefaultBackgroundColor.ToPlatform());
+            Background = _backgroundDrawable;
         }
 
         public override Drawable? Background 
@@ -74,6 +81,12 @@ namespace ButtonSam.Maui.Core
                 if (value != null)
                     base.Background = value; 
             }
+        }
+
+        public void SetBackgroundColor(Microsoft.Maui.Graphics.Color? color)
+        {
+            if (color != null)
+                _backgroundDrawable.Color = color.ToPlatform();
         }
 
         public override void Draw(Canvas? canvas)

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -12,8 +13,10 @@ namespace ButtonSam.Maui;
 
 public class Button : ButtonBase
 {
-    protected Color? MouseOverColor { get; set; }
-    protected Color? MouseTapColor { get; set; }
+    private const string animationName = "SBAnim";
+    private double animationProgress;
+    private Color? mouseOverColor;
+    private Color endAnimationColor = Colors.Transparent;
 
     protected bool IsRippleEffectSupport
     {
@@ -26,8 +29,43 @@ public class Button : ButtonBase
 #endif
         }
     }
+    protected virtual bool IsAnimating => this.AnimationIsRunning(animationName);
 
-    public virtual void OnAnimationStart()
+    protected override void OnPropertyChanged(string propertyName)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName == BackgroundColorProperty.PropertyName)
+        {
+            UpdateMouseOverColor();
+            UpdateEndAnimationColor();
+        }
+    }
+
+    protected virtual Task<bool> MauiAnimationPressed()
+    {
+        return this.TransitAnimation(animationName, animationProgress, 1, 180, Easing.Default, (x) =>
+        {
+            var from = mouseOverColor ?? BackgroundColor;
+            var to = endAnimationColor;
+            var result = from.ApplyTint(to, x);
+            DirectChangeBackgroundColor(result);
+            animationProgress = x;
+        });
+    }
+
+    protected virtual Task<bool> MauiAnimationReleased()
+    {
+        return this.TransitAnimation(animationName, animationProgress, 0, 180, Easing.Default, (x) =>
+        {
+            var start = mouseOverColor ?? BackgroundColor;
+            var end = endAnimationColor;
+            var result = start.ApplyTint(end, x);
+            DirectChangeBackgroundColor(result);
+            animationProgress = x;
+        });
+    }
+
+    public virtual async void OnAnimationStart()
     {
         if (!IsEnabled)
             return;
@@ -35,14 +73,12 @@ public class Button : ButtonBase
         bool isRipple = TryAnimationRippleStart(StartX, StartY);
         if (!isRipple)
         {
-            var from = MouseOverColor ?? BackgroundColor;
-            var to = TapColor;
+            StopAnim();
+            UpdateEndAnimationColor();
 
-            if (!IsRippleEffectSupport)
-                to = TapColor.MultiplyAlpha(0.5f);
-
-            MouseTapColor = to;
-            this.ColorTo(from, to, c => ChangeBackgroundColor(c), 100);
+            bool complete = await MauiAnimationPressed();
+            if (complete && !IsPressed)
+                _ = MauiAnimationReleased();
         }
     }
 
@@ -54,10 +90,24 @@ public class Button : ButtonBase
         bool isRipple = TryAnimationRippleFinish();
         if (!isRipple)
         {
-            var from = MouseTapColor;
-            var to = MouseOverColor ?? Colors.Transparent;
-            this.ColorTo(from, to, c => ChangeBackgroundColor(c), 180);
+            if (IsAnimating)
+                return;
+
+            _ = MauiAnimationReleased();
         }
+    }
+
+    private void UpdateMouseOverColor()
+    {
+        if (IsMouseOver)
+            mouseOverColor = BackgroundColor.ApplyTint(TapColor, 0.4f);
+        else
+            mouseOverColor = null;
+    }
+
+    private void UpdateEndAnimationColor()
+    {
+        endAnimationColor = BackgroundColor.ApplyTint(TapColor, 0.7);
     }
 
     protected virtual bool TryAnimationRippleStart(float x, float y)
@@ -143,14 +193,20 @@ public class Button : ButtonBase
 
     protected virtual void AnimationMouseOverStart()
     {
-        MouseOverColor = TapColor.MultiplyAlpha(0.2f);
-        ChangeBackgroundColor(MouseOverColor);
+        UpdateMouseOverColor();
+        if (!IsAnimating)
+            DirectChangeBackgroundColor(mouseOverColor!);
     }
 
     protected virtual void AnimationMouseOverRestore()
     {
-        MouseOverColor = null;
-        this.CancelAnimation();
-        ChangeBackgroundColor(null);
+        UpdateMouseOverColor();
+        if (!IsAnimating)
+            DirectChangeBackgroundColor(BackgroundColor);
+    }
+
+    protected virtual void StopAnim()
+    {
+        this.AbortAnimation(animationName);
     }
 }

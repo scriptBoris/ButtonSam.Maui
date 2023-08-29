@@ -24,7 +24,7 @@ namespace Sample.Custom
                 {
                     if ((bool)n)
                     {
-                        self.BackgroundColor = Colors.MediumBlue;
+                        self.BackgroundColor = Colors.OrangeRed;
                     }
                     else
                     {
