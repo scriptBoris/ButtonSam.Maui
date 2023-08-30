@@ -17,108 +17,79 @@ using ARectF = Android.Graphics.RectF;
 using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
 using Android.Graphics.Drawables;
+using Android.Content.Res;
+using static Android.Provider.MediaStore;
 
 namespace ButtonSam.Maui.Core
 {
     public partial class ButtonHandler : LayoutHandler, IButtonHandler
     {
-        public ButtonBase Proxy => (ButtonBase)VirtualView;
-        public float CornerRadius { get; private set; }
-
-        public bool OverrideAdd(object? value)
+        public ButtonHandler() : base(PropertyMapper)
         {
-            return false;
         }
 
-        public bool OverrideBackgroundColor(Microsoft.Maui.Graphics.Color color)
+        public static readonly PropertyMapper<ButtonBase, ButtonHandler> PropertyMapper = new(ViewMapper)
         {
-            if (PlatformView is ButtonLayout buttonLayout)
-                buttonLayout.SetBackgroundColor(color);
+            [nameof(ButtonBase.BackgroundColor)] = (h, v) =>
+            {
+                if (h.Native != null)
+                {
+                    var color = v.BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
+                    h.Native.SetupBackgroundColor(color.ToPlatform());
+                }
+            },
+            [nameof(ButtonBase.CornerRadius)] = (h, v) =>
+            {
+                h.Native?.UpdateCornerRadius((float)v.CornerRadius);
+            },
+            [nameof(ButtonBase.BorderColor)] = (h, v) =>
+            {
+                h.Native?.Invalidate();
+            },
+            [nameof(ButtonBase.BorderWidth)] = (h, v) =>
+            {
+                if (v is IView view)
+                    view.InvalidateMeasure();
+            },
+            [nameof(ButtonBase.TapColor)] = (h, v) =>
+            {
+                if (h.Native != null && v.TryRippleEffect)
+                    h.Native.SetRippleColor(v.TapColor.ToPlatform());
+            }
+        };
+
+        public ButtonBase Proxy => (ButtonBase)VirtualView;
+        public ButtonDroid? Native => PlatformView as ButtonDroid;
+
+        public void DirectSetBackgroundColor(Microsoft.Maui.Graphics.Color color)
+        {
+            if (Native != null)
+                Native.SetupBackgroundColor(color.ToPlatform());
+        }
+
+        public bool TryAnimationRippleStart(float x, float y)
+        {
+            if (!Proxy.TryRippleEffect)
+                return false;
+
+            float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+            x *= den;
+            y *= den;
+
+            Native?.RippleStart(x, y);
             return true;
         }
 
-        public bool OverrideInsert(object? value)
+        public bool TryAnimationRippleEnd()
         {
-            return false;
-        }
-
-        public void UpdateCornerRadius(double radius)
-        {
-            var metrics = Context.Resources!.DisplayMetrics;
-            CornerRadius = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)radius, metrics);
+            Native?.RippleFinish();
+            return true;
         }
 
         protected override LayoutViewGroup CreatePlatformView()
         {
-            var n = new ButtonLayout(this, Context);
-            UpdateCornerRadius(Proxy.CornerRadius);
+            var n = new ButtonDroid(this, Context);
             return n;
-        }
-    }
-
-    internal class ButtonLayout : LayoutViewGroup
-    {
-        //private readonly APaint _paint = new APaint(PaintFlags.AntiAlias);
-        private readonly APath _path = new APath();
-        //private readonly ARectF _bounds = new ARectF();
-        private readonly ButtonHandler _handler;
-        private readonly ColorDrawable _backgroundDrawable;
-        private double den;
-
-        public ButtonLayout(ButtonHandler handler, Context context) : base(context)
-        {
-            _handler = handler;
-            den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
-            _backgroundDrawable = new ColorDrawable(ButtonBase.DefaultBackgroundColor.ToPlatform());
-            Background = _backgroundDrawable;
-        }
-
-        public override Drawable? Background 
-        {
-            get => base.Background;
-            set 
-            {
-                if (value != null)
-                    base.Background = value; 
-            }
-        }
-
-        public void SetBackgroundColor(Microsoft.Maui.Graphics.Color? color)
-        {
-            if (color != null)
-                _backgroundDrawable.Color = color.ToPlatform();
-        }
-
-        public override void Draw(Canvas? canvas)
-        {
-            var corner = _handler.CornerRadius;
-            if (corner > 0)
-            {
-                _path.Reset();
-                var rect = new ARectF(0, 0, Width, Height);
-                _path.AddRoundRect(rect, corner, corner, APath.Direction.Cw!);
-                canvas?.ClipPath(_path);
-            }
-
-            base.Draw(canvas);
-
-            if (_handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0)
-            {
-                var bw = (float)(_handler.Proxy.BorderWidth * den);
-                using var paint = new APaint();
-                paint.Color = _handler.Proxy.BorderColor.ToPlatform();
-                paint.StrokeWidth = bw;
-                paint.SetStyle(APaint.Style.Stroke);
-                //paint.SetPathEffect(new CornerPathEffect(corner)); // радиус закругления углов
-
-                //canvas.DrawRect(new ARectF(0, 0, Width, Height), paint);
-                var del = bw / 2;
-                var x = del;
-                var y = del;
-                var w = Width - del;
-                var h = Height - del;
-                canvas.DrawRoundRect(new ARectF(x, y, w, h), corner, corner, paint);
-            }
         }
     }
 }

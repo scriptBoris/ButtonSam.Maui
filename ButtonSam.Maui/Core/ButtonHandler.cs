@@ -9,9 +9,9 @@ namespace ButtonSam.Maui.Core
 {
     public interface IButtonHandler
     {
-        bool OverrideBackgroundColor(Color color);
-        bool OverrideAdd(object? value);
-        bool OverrideInsert(object? value);
+        void DirectSetBackgroundColor(Color color);
+        bool TryAnimationRippleStart(float x, float y);
+        bool TryAnimationRippleEnd();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

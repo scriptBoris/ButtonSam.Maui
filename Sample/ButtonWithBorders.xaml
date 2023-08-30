@@ -9,24 +9,30 @@
     <StackLayout Spacing="10">
 
         <Label Text="ButtonSam"
-               TextColor="White"/>
-        
-        <bsam:Button BorderColor="Gold"
-                     BorderWidth="2">
+               TextColor="White" />
+
+        <bsam:Button Padding="10"
+                     BorderColor="Gold"
+                     BorderWidth="5"
+                     CornerRadius="10">
             <Label Text="I have borders!"
-                   TextColor="Gold"/>
+                   TextColor="Gold" />
         </bsam:Button>
 
-        <Label Text="MAUI Border (for compare)"
-               TextColor="White"/>
+        <ContentView Margin="0,20"
+                     BackgroundColor="Gold"
+                     HeightRequest="5" />
 
-        <Border StrokeThickness="2"
+        <Label Text="MAUI Border (for compare)"
+               TextColor="White" />
+
+        <Border Padding="10"
+                BackgroundColor="#323232"
                 Stroke="Gold"
                 StrokeShape="RoundRectangle 10"
-                BackgroundColor="#323232"
-                Padding="10">
+                StrokeThickness="5">
             <Label Text="I have borders!"
-                   TextColor="Gold"/>
+                   TextColor="Gold" />
         </Border>
     </StackLayout>
 </ContentPage>

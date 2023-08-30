@@ -47,9 +47,6 @@
 	  <Compile Update="Platforms\Android\ButtonHandler.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
 	  </Compile>
-	  <Compile Update="Platforms\Android\ClickHandler.cs">
-	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-	  </Compile>
 	</ItemGroup>
 
 </Project>

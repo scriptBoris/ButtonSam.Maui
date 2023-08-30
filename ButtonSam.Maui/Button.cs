@@ -114,19 +114,15 @@ public class Button : ButtonBase
 
     protected virtual bool TryAnimationRippleStart(float x, float y)
     {
-#if ANDROID
-        if (TryRippleEffect && ClickableView?.Handler is ClickViewHandler h)
-            return h.TryAnimationRippleStart(StartX, StartY);
-#endif
+        if (Handler is IButtonHandler handler)
+            return handler.TryAnimationRippleStart(x, y);
         return false;
     }
 
     protected virtual bool TryAnimationRippleFinish()
     {
-#if ANDROID
-        if (TryRippleEffect && ClickableView?.Handler is ClickViewHandler h)
-            return h.TryAnimationRippleEnd();
-#endif
+        if (Handler is IButtonHandler handler)
+            return handler.TryAnimationRippleEnd();
         return false;
     }
 

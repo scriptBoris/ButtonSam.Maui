@@ -95,6 +95,9 @@
 	  <MauiXaml Update="ButtonNoRipplePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="ButtonRoundedPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="ButtonTapColorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

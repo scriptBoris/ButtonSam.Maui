@@ -33,11 +33,14 @@
             <Button Clicked="Button_Clicked_8"
                     Text="With shadows" />
 
-            <Button Text="Multiple buttons" 
-                    Clicked="Button_Clicked_9"/>
+            <Button Clicked="Button_Clicked_9"
+                    Text="Multiple buttons" />
 
-            <Button Text="Selection buttons"
-                    Clicked="Button_Clicked_10"/>
+            <Button Clicked="Button_Clicked_10"
+                    Text="Selection buttons" />
+
+            <Button Clicked="Button_Clicked_11"
+                    Text="Rounded button" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

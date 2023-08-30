@@ -14,32 +14,8 @@ public static class Initializer
         builder.ConfigureMauiHandlers(x =>
         {
             x.AddHandler(typeof(ButtonBase), typeof(ButtonHandler));
-            x.AddHandler(typeof(ClickView), typeof(ClickViewHandler));
         });
 
-        ButtonHandler.Mapper.ModifyMapping(nameof(View.BackgroundColor), (h, v, origin) =>
-        {
-            if (h is IButtonHandler bh && v is View view && bh.OverrideBackgroundColor(view.BackgroundColor))
-                return;
-
-            origin?.Invoke(h, v);
-        });
-
-        ButtonHandler.CommandMapper.ModifyMapping(nameof(ILayoutHandler.Add), (h, v, value, origin) =>
-        {
-            if (h is IButtonHandler bh && bh.OverrideAdd(value))
-                return;
-
-            origin?.Invoke(h, v, value);
-        });
-
-        ButtonHandler.CommandMapper.ModifyMapping(nameof(ILayoutHandler.Insert), (h, v, value, origin) =>
-        {
-            if (h is IButtonHandler bh && bh.OverrideInsert(value))
-                return;
-
-            origin?.Invoke(h, v, value);
-        });
         return builder;
     }
 }

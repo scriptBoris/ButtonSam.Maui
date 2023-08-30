@@ -6,9 +6,9 @@
              Title="Fixed size"
              Padding="10">
     <StackLayout Spacing="10">
-        <Label Text="this page no contains content"/>
+        <Label Text="this page no contains content" />
         <bsam:Button HeightRequest="40"
-                     WidthRequest="150"
-                     HorizontalOptions="Start"/>
+                     HorizontalOptions="Start"
+                     WidthRequest="150" />
     </StackLayout>
 </ContentPage>

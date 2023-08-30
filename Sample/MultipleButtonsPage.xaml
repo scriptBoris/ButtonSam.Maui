@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="Sample.MultipleButtonsPage"
+             x:Name="root"
              Title="MultipleButtonsPage">
     <StackLayout>
         <CollectionView x:Name="collectionView"
@@ -11,7 +12,8 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <ContentView Padding="10">
-                        <sbutton:Button>
+                        <sbutton:Button TapCommand="{Binding CommandSelectItem, Source={Reference root}}"
+                                        TapCommandParameter="{Binding .}">
                             <Label Text="{Binding .}" />
                         </sbutton:Button>
                     </ContentView>

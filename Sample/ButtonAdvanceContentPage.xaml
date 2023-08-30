@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:Sample"
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             xmlns:local="clr-namespace:Sample"
              x:Class="Sample.ButtonAdvanceContentPage"
              x:DataType="local:ButtonAdvanceContentPage"
              Title="Advance content"
@@ -11,23 +11,23 @@
         <bsam:Button BackgroundColor="{AppThemeBinding Light=#CCC, Dark=#343434}">
             <StackLayout Orientation="Horizontal">
                 <StackLayout>
-                    <Label Text="You authorized as"
-                           TextColor="Gray"
-                           FontSize="18"/>
-                    <Label Text="Samuel Leroy Jackson"
-                           TextColor="{AppThemeBinding Light=#333, Dark=#DDD}"
-                           FontSize="20"/>
+                    <Label FontSize="18"
+                           Text="You authorized as"
+                           TextColor="Gray" />
+                    <Label FontSize="20"
+                           Text="Samuel Leroy Jackson"
+                           TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
 
-                    <Label Text="Online"
-                           Margin="0,10,0,0"
-                           TextColor="Gray"/>
+                    <Label Margin="0,10,0,0"
+                           Text="Online"
+                           TextColor="Gray" />
                 </StackLayout>
-                <Image Source="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/SamuelLJackson.jpg/250px-SamuelLJackson.jpg"
+                <Image Aspect="AspectFill"
                        HeightRequest="65"
-                       WidthRequest="65"
-                       Aspect="AspectFill"
                        HorizontalOptions="EndAndExpand"
-                       VerticalOptions="Center"/>
+                       Source="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/SamuelLJackson.jpg/250px-SamuelLJackson.jpg"
+                       VerticalOptions="Center"
+                       WidthRequest="65" />
             </StackLayout>
         </bsam:Button>
     </VerticalStackLayout>

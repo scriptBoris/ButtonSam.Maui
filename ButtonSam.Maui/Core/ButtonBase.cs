@@ -27,24 +27,6 @@ namespace ButtonSam.Maui.Core
         }
 
         #region bindable props
-        //// background color
-        //public new static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(
-        //    nameof(BackgroundColor),
-        //    typeof(Color),
-        //    typeof(ButtonBase),
-        //    Color.FromArgb("#323232"),
-        //    propertyChanged: (b, o, n) =>
-        //    {
-        //        if (b is ButtonBase self)
-        //            self.ChangeBackgroundColor((Color)n);
-        //    }
-        //);
-        //public new Color BackgroundColor
-        //{
-        //    get => (Color)GetValue(BackgroundColorProperty);
-        //    set => SetValue(BackgroundColorProperty, value);
-        //}
-
         // padding
         public new static readonly BindableProperty PaddingProperty = BindableProperty.Create(
             nameof(Padding),
@@ -70,11 +52,7 @@ namespace ButtonSam.Maui.Core
             nameof(BorderColor),
             typeof(Color),
             typeof(ButtonBase),
-            null,
-            propertyChanged: (b, o, n) =>
-            {
-                if (b is ButtonBase self) self.UpdateBorderColor();
-            }
+            null
         );
         public Color? BorderColor
         {
@@ -87,11 +65,7 @@ namespace ButtonSam.Maui.Core
             nameof(BorderWidth),
             typeof(double),
             typeof(ButtonBase),
-            1.0,
-            propertyChanged: (b, o, n) =>
-            {
-                if (b is ButtonBase self) self.UpdateBorderWidth();
-            }
+            1.0
         );
         public double BorderWidth
         {
@@ -104,11 +78,7 @@ namespace ButtonSam.Maui.Core
             nameof(CornerRadius),
             typeof(double),
             typeof(ButtonBase),
-            10.0,
-            propertyChanged: (b, o, n) =>
-            {
-                if (b is ButtonBase self) self.UpdateCornerRadius();
-            }
+            10.0
         );
         public double CornerRadius
         {
@@ -147,12 +117,7 @@ namespace ButtonSam.Maui.Core
             nameof(TapColor),
             typeof(Color),
             typeof(ButtonBase),
-            Color.FromRgba("#6da9d8"),
-            propertyChanged: (b, o, n) =>
-            {
-                if (b is ButtonBase self && self.ClickableView?.Handler is IClickViewHandler h)
-                    h.UpdateTapColor((Color)n);
-            }
+            Color.FromRgba("#6da9d8")
         );
         public Color TapColor
         {
@@ -207,7 +172,7 @@ namespace ButtonSam.Maui.Core
             null,
             propertyChanged: (b, o, n) =>
             {
-                if (b is ButtonBase self) self.Redraw(o as View, n as View);
+                if (b is ButtonBase self) self.UpdateContent(o as View, n as View);
             }
         );
         public View? Content
@@ -229,12 +194,6 @@ namespace ButtonSam.Maui.Core
         protected float StartX { get; set; }
         protected float StartY { get; set; }
         #endregion props
-
-        protected override void OnParentSet()
-        {
-            base.OnParentSet();
-            Redraw(null, null);
-        }
 
         protected override ILayoutManager CreateLayoutManager()
         {
@@ -319,21 +278,14 @@ namespace ButtonSam.Maui.Core
         }
 #endif
 
-        private void Redraw(View? old, View? news)
+        private void UpdateContent(View? old, View? news)
         {
             // content
             if (old != null)
                 Children.Remove(old);
 
             if (news != null)
-                Children.Insert(0, news);
-
-            // clickable
-            if (ClickableView == null)
-            {
-                ClickableView = new ClickView(this);
-                Children.Add(ClickableView);
-            }
+                Children.Add(news);
         }
 
         public void OnInteractive(InteractiveEventArgs args)
@@ -417,45 +369,7 @@ namespace ButtonSam.Maui.Core
         protected void DirectChangeBackgroundColor(Color color)
         {
             if (Handler is IButtonHandler bh)
-                bh.OverrideBackgroundColor(color);
-        }
-
-        private void UpdateCornerRadius()
-        {
-#if ANDROID
-            if (Handler is ButtonHandler buttonHandler)
-                buttonHandler.UpdateCornerRadius(CornerRadius);
-
-            if (this is IView v) 
-                v.InvalidateMeasure();
-#elif WINDOWS
-            if (Handler is ButtonHandler buttonHandler)
-                buttonHandler.UpdateCornerRadius(CornerRadius);
-#elif IOS
-            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
-#endif
-        }
-
-        private void UpdateBorderColor()
-        {
-#if ANDROID
-            if (this is IView v) v.InvalidateMeasure();
-#elif WINDOWS
-            if (Handler is ButtonHandler handler) handler.UpdateBorderColor(BorderColor);
-#elif IOS
-            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
-#endif
-        }
-
-        private void UpdateBorderWidth()
-        {
-#if ANDROID
-            if (this is IView v) v.InvalidateMeasure();
-#elif WINDOWS
-            if (Handler is ButtonHandler handler) handler.UpdateBorderWidth(BorderWidth);
-#elif IOS
-            if (Handler is ButtonHandler handler) handler.UpdateCALayer();
-#endif
+                bh.DirectSetBackgroundColor(color);
         }
     }
 
