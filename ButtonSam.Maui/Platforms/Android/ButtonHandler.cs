@@ -83,7 +83,7 @@ namespace ButtonSam.Maui.Core
         public bool TryAnimationRippleEnd()
         {
             Native?.RippleFinish();
-            return true;
+            return Proxy.TryRippleEffect;
         }
 
         protected override LayoutViewGroup CreatePlatformView()
