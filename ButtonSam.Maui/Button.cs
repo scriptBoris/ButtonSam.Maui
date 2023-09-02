@@ -13,10 +13,7 @@ namespace ButtonSam.Maui;
 
 public class Button : ButtonBase
 {
-    private const string animationName = "SBAnim";
-    private double animationProgress;
-    private Color? mouseOverColor;
-    private Color endAnimationColor = Colors.Transparent;
+    protected const string animationName = "SBAnim";
 
     protected bool IsRippleEffectSupport
     {
@@ -30,6 +27,9 @@ public class Button : ButtonBase
         }
     }
     protected virtual bool IsAnimating => this.AnimationIsRunning(animationName);
+    protected Color? MouseOverColor { get; private set; }
+    protected Color EndAnimationColor { get; private set; } = Colors.Transparent;
+    protected double AnimationProgress { get; private set; }
 
     protected override void OnPropertyChanged(string propertyName)
     {
@@ -41,30 +41,35 @@ public class Button : ButtonBase
                 UpdateMouseOverColor();
                 UpdateEndAnimationColor();
                 if (IsAnimating || IsPressed)
-                    AnimationFrame(animationProgress);
+                    AnimationFrame(AnimationProgress);
                 break;
             default:
                 break;
         }
     }
 
-    private void AnimationFrame(double x)
+    protected virtual void AnimationPropertyColor(Color color)
     {
-        var from = mouseOverColor ?? BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
-        var to = endAnimationColor;
+        DirectChangeBackgroundColor(color);
+    }
+
+    protected virtual void AnimationFrame(double x)
+    {
+        var from = MouseOverColor ?? BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
+        var to = EndAnimationColor;
         var result = from.ApplyTint(to, x);
-        DirectChangeBackgroundColor(result);
-        animationProgress = x;
+        AnimationPropertyColor(result);
+        AnimationProgress = x;
     }
 
     protected virtual Task<bool> MauiAnimationPressed()
     {
-        return this.TransitAnimation(animationName, animationProgress, 1, 180, Easing.Default, AnimationFrame);
+        return this.TransitAnimation(animationName, AnimationProgress, 1, 180, Easing.Default, AnimationFrame);
     }
 
     protected virtual Task<bool> MauiAnimationReleased()
     {
-        return this.TransitAnimation(animationName, animationProgress, 0, 180, Easing.Default, AnimationFrame);
+        return this.TransitAnimation(animationName, AnimationProgress, 0, 180, Easing.Default, AnimationFrame);
     }
 
     public virtual async void OnAnimationStart()
@@ -102,14 +107,14 @@ public class Button : ButtonBase
     private void UpdateMouseOverColor()
     {
         if (IsMouseOver)
-            mouseOverColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.4f);
+            MouseOverColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.4f);
         else
-            mouseOverColor = null;
+            MouseOverColor = null;
     }
 
     private void UpdateEndAnimationColor()
     {
-        endAnimationColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.7);
+        EndAnimationColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.7);
     }
 
     protected virtual bool TryAnimationRippleStart(float x, float y)
@@ -193,7 +198,7 @@ public class Button : ButtonBase
     {
         UpdateMouseOverColor();
         if (!IsAnimating)
-            DirectChangeBackgroundColor(mouseOverColor!);
+            DirectChangeBackgroundColor(MouseOverColor!);
     }
 
     protected virtual void AnimationMouseOverRestore()
