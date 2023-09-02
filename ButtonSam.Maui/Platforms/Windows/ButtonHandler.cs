@@ -37,7 +37,13 @@ namespace ButtonSam.Maui.Core
             [nameof(ButtonBase.CornerRadius)] = (h, v) =>
             {
                 if (h.Wrapper != null)
-                    h.Wrapper.CornerRadius = new WCornerRadius(v.CornerRadius);
+                    h.Wrapper.CornerRadius = new WCornerRadius
+                    {
+                        TopLeft = v.CornerRadius.TopLeft,
+                        TopRight = v.CornerRadius.TopRight,
+                        BottomRight = v.CornerRadius.BottomRight,
+                        BottomLeft = v.CornerRadius.BottomLeft,
+                    };
             },
             [nameof(ButtonBase.BorderWidth)] = (h, v) =>
             {

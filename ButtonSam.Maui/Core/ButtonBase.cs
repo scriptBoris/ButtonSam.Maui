@@ -76,13 +76,13 @@ namespace ButtonSam.Maui.Core
         // corner radius
         public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(
             nameof(CornerRadius),
-            typeof(double),
+            typeof(CornerRadius),
             typeof(ButtonBase),
-            10.0
+            new CornerRadius(10)
         );
-        public double CornerRadius
+        public CornerRadius CornerRadius
         {
-            get => (double)GetValue(CornerRadiusProperty);
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
             set => SetValue(CornerRadiusProperty, value);
         }
 
@@ -189,8 +189,6 @@ namespace ButtonSam.Maui.Core
             set => base.BackgroundColor = value;
         }
 
-        protected View? ClickableView { get; private set; }
-
         protected float StartX { get; set; }
         protected float StartY { get; set; }
         #endregion props
@@ -200,7 +198,6 @@ namespace ButtonSam.Maui.Core
             return this;
         }
 
-#if WINDOWS
         public Size ArrangeChildren(Rect bounds)
         {
             if (Content is IView cv)
@@ -209,74 +206,25 @@ namespace ButtonSam.Maui.Core
                 double y = Padding.Top;
                 double w = bounds.Width - Padding.HorizontalThickness;
                 double h = bounds.Height - Padding.VerticalThickness;
-
-                if (w < cv.DesiredSize.Width) w = cv.DesiredSize.Width;
-                if (h < cv.DesiredSize.Height) h = cv.DesiredSize.Height;
-
-                var r = new Rect(x, y, w, h);
-                cv.Arrange(r);
-            }
-
-            if (ClickableView is IView c)
-            {
-                c.Arrange(bounds);
-            }
-
-            return bounds.Size;
-        }
-
-        public Size Measure(double widthConstraint, double heightConstraint)
-        {
-            double w = widthConstraint - Padding.HorizontalThickness;
-            double h = heightConstraint - Padding.VerticalThickness;
-
-            var size = new Size(40, 20);
-            if (Content is IView content)
-                size = content.Measure(w, h);
-
-            size += new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
-
-            return size;
-        }
-#else
-        public Size ArrangeChildren(Rect bounds)
-        {
-            if (Content is IView cv)
-            {
-                double bw = (BorderWidth > 0 && BorderColor != null) ? BorderWidth : 0;
-                double x = Padding.Left + bw;
-                double y = Padding.Top + bw;
-                double w = bounds.Width - (Padding.HorizontalThickness + bw * 2);
-                double h = bounds.Height - (Padding.VerticalThickness + bw * 2);
-
-                if (w < cv.DesiredSize.Width) w = cv.DesiredSize.Width;
-                if (h < cv.DesiredSize.Height) h = cv.DesiredSize.Height;
-
                 var rect = new Rect(x, y, w, h);
                 cv.Arrange(rect);
             }
 
-            if (ClickableView is IView c)
-            {
-                c.Arrange(bounds);
-            }
-
             return bounds.Size;
         }
 
         public Size Measure(double widthConstraint, double heightConstraint)
         {
-            double bw = BorderWidth > 0 && BorderColor != null ? BorderWidth * 2 : 0;
-            var w = widthConstraint - (Padding.HorizontalThickness + bw);
-            var h = heightConstraint - (Padding.VerticalThickness + bw);
+            var freeWidth = widthConstraint - Padding.HorizontalThickness;
+            var freeHeight = heightConstraint - Padding.VerticalThickness;
 
-            var size = Content?.Measure(w, h) ?? new Size(40, 20);
+            var size = new Size(40, 20);
+            if (Content is IView content)
+                size = content.Measure(freeWidth, freeHeight);
+
             size += new Size(Padding.HorizontalThickness, Padding.VerticalThickness);
-            size += new Size(bw, bw);
-
             return size;
         }
-#endif
 
         private void UpdateContent(View? old, View? news)
         {

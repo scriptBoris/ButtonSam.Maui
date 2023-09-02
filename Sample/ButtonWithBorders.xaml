@@ -11,10 +11,10 @@
         <Label Text="ButtonSam"
                TextColor="White" />
 
-        <bsam:Button Padding="10"
+        <bsam:Button Padding="15"
                      BorderColor="Gold"
                      BorderWidth="5"
-                     CornerRadius="10">
+                     CornerRadius="0,10,20,5">
             <Label Text="I have borders!"
                    TextColor="Gold" />
         </bsam:Button>
@@ -26,10 +26,10 @@
         <Label Text="MAUI Border (for compare)"
                TextColor="White" />
 
-        <Border Padding="10"
+        <Border Padding="15"
                 BackgroundColor="#323232"
                 Stroke="Gold"
-                StrokeShape="RoundRectangle 10"
+                StrokeShape="RoundRectangle 0,10,20,5"
                 StrokeThickness="5">
             <Label Text="I have borders!"
                    TextColor="Gold" />

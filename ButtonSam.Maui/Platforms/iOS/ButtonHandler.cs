@@ -1,4 +1,5 @@
-﻿using CoreAnimation;
+﻿using ButtonSam.Maui.Platforms.iOS;
+using CoreAnimation;
 using CoreFoundation;
 using CoreGraphics;
 using Microsoft.Maui.Handlers;
@@ -22,42 +23,29 @@ namespace ButtonSam.Maui.Core
             },
             [nameof(ButtonBase.BorderWidth)] = (h, v) =>
             {
-                var den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
-                var layer = h.PlatformView.Layer;
-                if (h.IsUseBorder)
-                    layer.BorderWidth = (float)v.BorderWidth;
-                else
-                    layer.BorderWidth = 0;
+                if (h.Native != null)
+                    h.Native.BorderWidth = v.BorderWidth;
             },
             [nameof(ButtonBase.BorderColor)] = (h, v) =>
             {
-                var layer = h.PlatformView.Layer;
-
-                if (h.IsUseBorder)
-                {
-                    layer.BorderColor = v.BorderColor!.ToCGColor();
-                    layer.BorderWidth = (float)v.BorderWidth;
-                }
-                else
-                {
-                    layer.BorderColor = null;
-                    layer.BorderWidth = 0;
-                }
+                if (h.Native != null)
+                    h.Native.BorderColor = v.BorderColor?.ToPlatform();
             },
             [nameof(ButtonBase.CornerRadius)] = (h, v) =>
             {
-                var layer = h.PlatformView.Layer;
-                layer.CornerRadius = (float)v.CornerRadius;
+                if (h.Native != null)
+                    h.Native.CornerRadius = v.CornerRadius;
             },
         };
 
         public ButtonBase Proxy => (ButtonBase)VirtualView;
+        public ButtonIos? Native => PlatformView as ButtonIos;
         public bool IsUseBorder => Proxy.BorderColor != null && Proxy.BorderWidth > 0;
         protected UILongPressGestureRecognizer? ButtonGesture { get; private set; }
 
         protected override LayoutView CreatePlatformView()
         {
-            var native = base.CreatePlatformView();
+            var native = new ButtonIos();
             native.Layer.BackgroundColor = Colors.Transparent.ToCGColor();
             native.ClipsToBounds = true;
             native.UserInteractionEnabled = true;
@@ -76,7 +64,7 @@ namespace ButtonSam.Maui.Core
         {
             base.SetVirtualView(view);
             var color = Proxy.BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
-            PlatformView.BackgroundColor = color.ToPlatform();
+            DirectSetBackgroundColor(color);
         }
 
         public bool TryAnimationRippleStart(float x, float y)
@@ -91,10 +79,7 @@ namespace ButtonSam.Maui.Core
 
         public virtual void DirectSetBackgroundColor(Color color)
         {
-            if (PlatformView != null)
-            {
-                PlatformView.BackgroundColor = color.ToPlatform();
-            }
+            Native?.SetupBackground(color.ToPlatform());
         }
 
         protected virtual bool ShouldRecognizeSimultaneously(UIGestureRecognizer buttonGesture, UIGestureRecognizer other)

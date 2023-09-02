@@ -19,22 +19,25 @@ using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
 using AndroidX.Core.Graphics.Drawable;
 using Java.Lang.Annotation;
+using static Android.Provider.MediaStore.Audio;
 
 namespace ButtonSam.Maui.Core
 {
     public class ButtonDroid : LayoutViewGroup
     {
-        private readonly APath _path = new();
         private readonly ButtonHandler _handler;
-        private readonly double _den;
         private readonly RippleDrawable _bgRipple;
         private readonly ColorDrawable _bgColorDrawable;
-        private AView? _content;
+        private readonly APath _pathCorners = new();
+        private readonly APath _pathBorders = new();
+        private readonly double _density;
+        private CornerRadius _cornerRadius;
+        private float[] corners = new float[] { };
 
         public ButtonDroid(ButtonHandler handler, Context context) : base(context)
         {
             _handler = handler;
-            _den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+            _density = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
             _bgColorDrawable = new ColorDrawable();
             _bgRipple = CreateRipple(AColor.White);
             Clickable = true;
@@ -58,20 +61,31 @@ namespace ButtonSam.Maui.Core
             }
         }
 
-        public AView? Content
+        public CornerRadius CornerRadius
         {
-            get => _content;
+            get => _cornerRadius;
             set
             {
-                if (_content != null)
-                    RemoveView(_content);
+                _cornerRadius = value;
+                var metrics = Context!.Resources!.DisplayMetrics;
+                var cornerTL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopLeft, metrics);
+                var cornerTR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopRight, metrics);
+                var cornerBR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomRight, metrics);
+                var cornerBL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomLeft, metrics);
 
-                _content = value;
-                AddView(_content);
+                corners = new float[]
+                {
+                    cornerTL, cornerTL,
+                    cornerTR, cornerTR,
+                    cornerBR, cornerBR,
+                    cornerBL, cornerBL,
+                };
+                this.Invalidate();
             }
         }
 
-        private float CornerRadius { get; set; }
+        public bool HasCornerRadius => _cornerRadius.TopLeft > 0 || _cornerRadius.TopRight > 0 || _cornerRadius.BottomRight > 0 || _cornerRadius.BottomLeft > 0;
+        public bool HasBorders => _handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0;
 
         public void SetupBackgroundColor(AColor color)
         {
@@ -94,14 +108,7 @@ namespace ButtonSam.Maui.Core
             Pressed = false;
         }
 
-        public void UpdateCornerRadius(float radius)
-        {
-            var metrics = Context.Resources!.DisplayMetrics;
-            CornerRadius = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)radius, metrics);
-            this.Invalidate();
-        }
-
-        private RippleDrawable CreateRipple(AColor tapColor)
+        private static RippleDrawable CreateRipple(AColor tapColor)
         {
             var mask = new ColorDrawable(AColor.White);
             return new RippleDrawable(GetRippleColorSelector(tapColor), null, mask);
@@ -116,43 +123,32 @@ namespace ButtonSam.Maui.Core
             );
         }
 
-        private int lastPathW;
-        private int lastPathH;
         public override void Draw(Canvas? canvas)
         {
-            var corner = CornerRadius;
-            if (corner > 0)
+            if (HasCornerRadius)
             {
-                if (lastPathW != Width || lastPathH != Height)
-                {
-                    _path.Reset();
-                    var rect = new ARectF(0, 0, Width, Height);
-                    _path.AddRoundRect(rect, corner, corner, APath.Direction.Cw!);
-                    
-                    lastPathW = Width;
-                    lastPathH = Height;
-                }
-                canvas?.ClipPath(_path);
+                _pathCorners.Reset();
+                var rect = new ARectF(0, 0, Width, Height);
+                _pathCorners.AddRoundRect(rect, corners, APath.Direction.Cw!);
+                canvas?.ClipPath(_pathCorners);
             }
 
             base.Draw(canvas);
 
-            if (_handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0)
+            if (HasBorders)
             {
-                var bw = (float)(_handler.Proxy.BorderWidth * _den);
+                var bw = (float)(_handler.Proxy.BorderWidth * _density);
+                var delta = bw / 2;
                 using var paint = new APaint();
-                paint.Color = _handler.Proxy.BorderColor.ToPlatform();
+                paint.Color = _handler.Proxy.BorderColor!.ToPlatform();
                 paint.StrokeWidth = bw;
                 paint.SetStyle(APaint.Style.Stroke);
-                //paint.SetPathEffect(new CornerPathEffect(corner)); // радиус закругления углов
 
-                //canvas.DrawRect(new ARectF(0, 0, Width, Height), paint);
-                var del = bw / 2;
-                var x = del;
-                var y = del;
-                var w = Width - del;
-                var h = Height - del;
-                canvas?.DrawRoundRect(new ARectF(x, y, w, h), corner, corner, paint);
+                _pathBorders.Reset();
+                var rect = new ARectF(0, 0, Width, Height);
+                rect.Inset(delta, delta);
+                _pathBorders.AddRoundRect(rect, corners, APath.Direction.Cw!);
+                canvas?.DrawPath(_pathBorders, paint);
             }
         }
     }

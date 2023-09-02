@@ -40,7 +40,8 @@ namespace ButtonSam.Maui.Core
             },
             [nameof(ButtonBase.CornerRadius)] = (h, v) =>
             {
-                h.Native?.UpdateCornerRadius((float)v.CornerRadius);
+                if (h.Native != null)
+                    h.Native.CornerRadius = v.CornerRadius;
             },
             [nameof(ButtonBase.BorderColor)] = (h, v) =>
             {
@@ -48,8 +49,7 @@ namespace ButtonSam.Maui.Core
             },
             [nameof(ButtonBase.BorderWidth)] = (h, v) =>
             {
-                if (v is IView view)
-                    view.InvalidateMeasure();
+                h.Native?.Invalidate();
             },
             [nameof(ButtonBase.TapColor)] = (h, v) =>
             {
