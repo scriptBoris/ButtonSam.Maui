@@ -50,7 +50,7 @@ public class Button : ButtonBase
 
     private void AnimationFrame(double x)
     {
-        var from = mouseOverColor ?? BackgroundColor;
+        var from = mouseOverColor ?? BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
         var to = endAnimationColor;
         var result = from.ApplyTint(to, x);
         DirectChangeBackgroundColor(result);
@@ -102,14 +102,14 @@ public class Button : ButtonBase
     private void UpdateMouseOverColor()
     {
         if (IsMouseOver)
-            mouseOverColor = BackgroundColor.ApplyTint(TapColor, 0.4f);
+            mouseOverColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.4f);
         else
             mouseOverColor = null;
     }
 
     private void UpdateEndAnimationColor()
     {
-        endAnimationColor = BackgroundColor.ApplyTint(TapColor, 0.7);
+        endAnimationColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.7);
     }
 
     protected virtual bool TryAnimationRippleStart(float x, float y)
@@ -200,7 +200,7 @@ public class Button : ButtonBase
     {
         UpdateMouseOverColor();
         if (!IsAnimating)
-            DirectChangeBackgroundColor(BackgroundColor);
+            DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
     }
 
     protected virtual void StopAnim()

@@ -183,12 +183,6 @@ namespace ButtonSam.Maui.Core
         #endregion bindable props
 
         #region props
-        protected new Color BackgroundColor
-        {
-            get => base.BackgroundColor ?? DefaultBackgroundColor;
-            set => base.BackgroundColor = value;
-        }
-
         protected float StartX { get; set; }
         protected float StartY { get; set; }
         #endregion props
