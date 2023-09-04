@@ -70,7 +70,7 @@ namespace ButtonSam.Maui.Platforms.iOS
             }
             else
             {
-                _maskLayer.Path = null;
+                _maskLayer.Path = CGPath.FromRect(rect);
             }
 
             if (BorderColor != null && BorderWidth > 0)

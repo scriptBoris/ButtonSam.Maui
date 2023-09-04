@@ -59,17 +59,26 @@ public class Button : ButtonBase
         var to = EndAnimationColor;
         var result = from.ApplyTint(to, x);
         AnimationPropertyColor(result);
-        AnimationProgress = x;
     }
 
     protected virtual Task<bool> MauiAnimationPressed()
     {
-        return this.TransitAnimation(animationName, AnimationProgress, 1, 180, Easing.Default, AnimationFrame);
+        return this.TransitAnimation(animationName, AnimationProgress, 1, 180, Easing.Default,
+            (x) =>
+            {
+                AnimationFrame(x);
+                AnimationProgress = x;
+            });
     }
 
     protected virtual Task<bool> MauiAnimationReleased()
     {
-        return this.TransitAnimation(animationName, AnimationProgress, 0, 180, Easing.Default, AnimationFrame);
+        return this.TransitAnimation(animationName, AnimationProgress, 0, 180, Easing.Default,
+            (x) =>
+            {
+                AnimationFrame(x);
+                AnimationProgress = x;
+            });
     }
 
     public virtual async void OnAnimationStart()
