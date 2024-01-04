@@ -14,9 +14,19 @@
         <bsam:Button Padding="15"
                      BorderColor="Gold"
                      BorderWidth="5"
+                     TapColor="Red"
                      CornerRadius="0,10,20,5">
             <Label Text="I have borders!"
                    TextColor="Gold" />
+        </bsam:Button>
+
+        <bsam:Button Padding="10"
+                     BorderColor="#666"
+                     BorderWidth="2"
+                     TapColor="Red"
+                     CornerRadius="5">
+            <Label FontSize="16"
+                   Text="test" />
         </bsam:Button>
 
         <ContentView Margin="0,20"

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="Sample.NestedButtonsPage"
+             Title="Nested buttons"
+             Padding="0">
+    <ScrollView>
+
+        <VerticalStackLayout Padding="10"
+                             Spacing="10">
+
+            <!--  Button into button  -->
+            <Label Text="Button into button" />
+            <sbutton:Button Padding="30">
+                <sbutton:Button HorizontalOptions="Center"
+                                BackgroundColor="Gray">
+                    <Label Text="Button" />
+                </sbutton:Button>
+            </sbutton:Button>
+
+            <!--  Custom interactive view into button  -->
+            <Label Text="Custom interactive view into button" />
+            <sbutton:Button Padding="30">
+                <ContentView>
+                    <Label HorizontalOptions="Center"
+                           Text="Go to wikipedia"
+                           TextColor="Blue">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </ContentView>
+            </sbutton:Button>
+
+            <!--  Unclickable area into button  -->
+            <Label Text="Unclickable area into button" />
+            <sbutton:Button Padding="0">
+                <Grid ColumnDefinitions="*,*"
+                      RowDefinitions="150">
+                    <Label Grid.Column="0"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"
+                           Text="It is are clickable area"
+                           TextColor="Green" />
+
+                    <Border Grid.Column="1"
+                            Margin="10"
+                            Padding="10"
+                            BackgroundColor="#343434"
+                            StrokeShape="RoundRectangle 10">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer />
+                        </Border.GestureRecognizers>
+
+                        <StackLayout>
+
+                            <Label HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   Text="It is are unclickable area"
+                                   TextColor="Red" />
+                            <Stepper />
+                            <Slider />
+
+                        </StackLayout>
+                    </Border>
+                </Grid>
+            </sbutton:Button>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

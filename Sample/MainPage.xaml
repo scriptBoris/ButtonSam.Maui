@@ -15,11 +15,17 @@
             <Button Clicked="Button_Clicked_2"
                     Text="Advance content" />
 
+            <Button Clicked="Button_Clicked_11"
+                    Text="Rounded button" />
+
             <Button Clicked="Button_Clicked_3"
                     Text="Fixed size" />
 
             <Button Clicked="Button_Clicked_4"
                     Text="With borders" />
+
+            <Button Clicked="Button_Clicked_8"
+                    Text="With shadows" />
 
             <Button Clicked="Button_Clicked_5"
                     Text="Custom tap color" />
@@ -30,17 +36,14 @@
             <Button Clicked="Button_Clicked_7"
                     Text="Disabled button" />
 
-            <Button Clicked="Button_Clicked_8"
-                    Text="With shadows" />
-
             <Button Clicked="Button_Clicked_9"
                     Text="Multiple buttons" />
 
             <Button Clicked="Button_Clicked_10"
                     Text="Selection buttons" />
 
-            <Button Clicked="Button_Clicked_11"
-                    Text="Rounded button" />
+            <Button Clicked="Button_Clicked_12"
+                    Text="Nested buttons" />
         </StackLayout>
     </ScrollView>
 </ContentPage>

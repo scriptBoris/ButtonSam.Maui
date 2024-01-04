@@ -13,7 +13,15 @@ public static class Initializer
     {
         builder.ConfigureMauiHandlers(x =>
         {
-            x.AddHandler(typeof(ButtonBase), typeof(ButtonHandler));
+#if ANDROID
+            x.AddHandler(typeof(ButtonBase), typeof(Platforms.Android.ButtonHandler));
+#elif IOS
+            x.AddHandler(typeof(ButtonBase), typeof(Platforms.iOS.ButtonHandler));
+#elif WINDOWS
+            x.AddHandler(typeof(ButtonBase), typeof(Platforms.Windows.ButtonHandler));
+#else
+            throw new NotImplementedException();
+#endif
         });
 
         return builder;

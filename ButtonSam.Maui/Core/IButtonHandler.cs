@@ -13,9 +13,4 @@ namespace ButtonSam.Maui.Core
         bool TryAnimationRippleStart(float x, float y);
         bool TryAnimationRippleEnd();
     }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public partial class ButtonHandler
-    {
-    }
 }

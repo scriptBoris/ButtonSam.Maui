@@ -15,6 +15,28 @@ public class Button : ButtonBase
 {
     protected const string animationName = "SBAnim";
 
+    #region bindable props
+    // is auto circle
+    public static readonly BindableProperty IsAutoCircleProperty = BindableProperty.Create(
+        nameof(IsAutoCircle),
+        typeof(bool),
+        typeof(Button),
+        false,
+        propertyChanged: (b, o, n) =>
+        {
+            if (b is Button self && (bool)n)
+            {
+                self.UpdateAutoCircle(self.Width, self.Height);
+            }
+        }
+    );
+    public bool IsAutoCircle
+    {
+        get => (bool)GetValue(IsAutoCircleProperty);
+        set => SetValue(IsAutoCircleProperty, value);
+    }
+    #endregion bindable props
+
     protected bool IsRippleEffectSupport
     {
         get
@@ -45,6 +67,17 @@ public class Button : ButtonBase
                 break;
             default:
                 break;
+        }
+    }
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height); 
+
+        if (IsAutoCircle)
+        {
+            double min = Math.Min(width, height);
+            UpdateAutoCircle(min, min);
         }
     }
 
@@ -220,5 +253,14 @@ public class Button : ButtonBase
     protected virtual void StopAnim()
     {
         this.AbortAnimation(animationName);
+    }
+
+    private void UpdateAutoCircle(double w, double h)
+    {
+        double max = Math.Max(w, h);
+        if (max > 0)
+        {
+            CornerRadius = max / 2;
+        }
     }
 }

@@ -19,137 +19,134 @@ using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
 using AndroidX.Core.Graphics.Drawable;
 using Java.Lang.Annotation;
-using static Android.Provider.MediaStore.Audio;
+using Android.OS;
 
-namespace ButtonSam.Maui.Core
+namespace ButtonSam.Maui.Platforms.Android;
+
+public class ButtonDroid : LayoutViewGroup
 {
-    public class ButtonDroid : LayoutViewGroup
+    private readonly ButtonHandler _handler;
+    private readonly RippleDrawable _bgRipple;
+    private readonly ColorDrawable _bgColorDrawable;
+    private readonly APath _pathCorners = new();
+    private readonly APath _pathBorders = new();
+    private readonly double _density;
+    private CornerRadius _cornerRadius;
+    private float[] corners = [];
+
+    public ButtonDroid(ButtonHandler handler, Context context) : base(context)
     {
-        private readonly ButtonHandler _handler;
-        private readonly RippleDrawable _bgRipple;
-        private readonly ColorDrawable _bgColorDrawable;
-        private readonly APath _pathCorners = new();
-        private readonly APath _pathBorders = new();
-        private readonly double _density;
-        private CornerRadius _cornerRadius;
-        private float[] corners = new float[] { };
+        _handler = handler;
+        _density = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+        _bgColorDrawable = new ColorDrawable();
+        _bgRipple = CreateRipple(AColor.White);
+        Clickable = true;
+        LongClickable = true;
+        TouchDelegate = new ButtonTouchDelegate(handler.Proxy, null, this);
 
-        public ButtonDroid(ButtonHandler handler, Context context) : base(context)
+        Background = new LayerDrawable(new Drawable[]
         {
-            _handler = handler;
-            _density = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
-            _bgColorDrawable = new ColorDrawable();
-            _bgRipple = CreateRipple(AColor.White);
-            Clickable = true;
-            LongClickable = true;
-            TouchDelegate = new ButtonTouchDelegate(handler.Proxy, null, this);
+            _bgColorDrawable,
+            _bgRipple,
+        });
+    }
 
-            Background = new LayerDrawable(new Drawable[]
-            {
-                _bgColorDrawable,
-                _bgRipple,
-            });
+    public override Drawable? Background
+    {
+        get => base.Background;
+        set
+        {
+            if (value != null && base.Background == null)
+                base.Background = value;
+        }
+    }
+
+    public CornerRadius CornerRadius
+    {
+        get => _cornerRadius;
+        set
+        {
+            _cornerRadius = value;
+            var metrics = Context!.Resources!.DisplayMetrics;
+            var cornerTL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopLeft, metrics);
+            var cornerTR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopRight, metrics);
+            var cornerBR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomRight, metrics);
+            var cornerBL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomLeft, metrics);
+
+            corners =
+            [
+                cornerTL, cornerTL,
+                cornerTR, cornerTR,
+                cornerBR, cornerBR,
+                cornerBL, cornerBL,
+            ];
+            this.Invalidate();
+        }
+    }
+
+    public bool HasCornerRadius => _cornerRadius.TopLeft > 0 || _cornerRadius.TopRight > 0 || _cornerRadius.BottomRight > 0 || _cornerRadius.BottomLeft > 0;
+    public bool HasBorders => _handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0;
+
+    public void SetupBackgroundColor(AColor color)
+    {
+        _bgColorDrawable.Color = color;
+    }
+
+    public void SetRippleColor(AColor color)
+    {
+        _bgRipple.SetColor(GetRippleColorSelector(color));
+    }
+
+    public void RippleStart(float x, float y)
+    {
+        _bgRipple.SetHotspot(x, y);
+        Pressed = true;
+    }
+
+    public void RippleFinish()
+    {
+        Pressed = false;
+    }
+
+    private static RippleDrawable CreateRipple(AColor tapColor)
+    {
+        var mask = new ColorDrawable(AColor.White);
+        return new RippleDrawable(GetRippleColorSelector(tapColor), null, mask);
+    }
+
+    private static ColorStateList GetRippleColorSelector(int pressedColor)
+    {
+        return new ColorStateList
+        (
+            new int[][] { new int[] { } },
+            new int[] { pressedColor, }
+        );
+    }
+
+    public override void Draw(Canvas canvas)
+    {
+        var rect = (HasCornerRadius || HasBorders) ? new ARectF(0, 0, Width, Height) : null;
+
+        if (HasCornerRadius)
+        {
+            _pathCorners.Reset();
+            _pathCorners.AddRoundRect(rect!, corners, APath.Direction.Cw!);
+            canvas.ClipPath(_pathCorners);
         }
 
-        public override Drawable? Background
+        base.Draw(canvas);
+
+        if (HasBorders)
         {
-            get => base.Background;
-            set
-            {
-                if (value != null && base.Background == null)
-                    base.Background = value;
-            }
-        }
+            float bw = (float)(_handler.Proxy.BorderWidth * _density);
+            using var paint = new APaint();
+            paint.Color = _handler.Proxy.BorderColor!.ToPlatform();
+            paint.StrokeWidth = bw * 2;
+            paint.SetStyle(APaint.Style.Stroke);
 
-        public CornerRadius CornerRadius
-        {
-            get => _cornerRadius;
-            set
-            {
-                _cornerRadius = value;
-                var metrics = Context!.Resources!.DisplayMetrics;
-                var cornerTL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopLeft, metrics);
-                var cornerTR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.TopRight, metrics);
-                var cornerBR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomRight, metrics);
-                var cornerBL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomLeft, metrics);
-
-                corners = new float[]
-                {
-                    cornerTL, cornerTL,
-                    cornerTR, cornerTR,
-                    cornerBR, cornerBR,
-                    cornerBL, cornerBL,
-                };
-                this.Invalidate();
-            }
-        }
-
-        public bool HasCornerRadius => _cornerRadius.TopLeft > 0 || _cornerRadius.TopRight > 0 || _cornerRadius.BottomRight > 0 || _cornerRadius.BottomLeft > 0;
-        public bool HasBorders => _handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0;
-
-        public void SetupBackgroundColor(AColor color)
-        {
-            _bgColorDrawable.Color = color;
-        }
-
-        public void SetRippleColor(AColor color)
-        {
-            _bgRipple.SetColor(GetRippleColorSelector(color));
-        }
-
-        public void RippleStart(float x, float y)
-        {
-            _bgRipple.SetHotspot(x, y);
-            Pressed = true;
-        }
-
-        public void RippleFinish()
-        {
-            Pressed = false;
-        }
-
-        private static RippleDrawable CreateRipple(AColor tapColor)
-        {
-            var mask = new ColorDrawable(AColor.White);
-            return new RippleDrawable(GetRippleColorSelector(tapColor), null, mask);
-        }
-
-        private static ColorStateList GetRippleColorSelector(int pressedColor)
-        {
-            return new ColorStateList
-            (
-                new int[][] { new int[] { } },
-                new int[] { pressedColor, }
-            );
-        }
-
-        public override void Draw(Canvas? canvas)
-        {
-            if (HasCornerRadius)
-            {
-                _pathCorners.Reset();
-                var rect = new ARectF(0, 0, Width, Height);
-                _pathCorners.AddRoundRect(rect, corners, APath.Direction.Cw!);
-                canvas?.ClipPath(_pathCorners);
-            }
-
-            base.Draw(canvas);
-
-            if (HasBorders)
-            {
-                var bw = (float)(_handler.Proxy.BorderWidth * _density);
-                var delta = bw / 2;
-                using var paint = new APaint();
-                paint.Color = _handler.Proxy.BorderColor!.ToPlatform();
-                paint.StrokeWidth = bw;
-                paint.SetStyle(APaint.Style.Stroke);
-
-                _pathBorders.Reset();
-                var rect = new ARectF(0, 0, Width, Height);
-                rect.Inset(delta, delta);
-                _pathBorders.AddRoundRect(rect, corners, APath.Direction.Cw!);
-                canvas?.DrawPath(_pathBorders, paint);
-            }
+            _pathBorders.Reset();
+            _pathBorders.AddRoundRect(rect!, corners, APath.Direction.Cw!);
+            canvas.DrawPath(_pathBorders, paint);
         }
     }
 }

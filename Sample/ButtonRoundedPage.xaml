@@ -7,12 +7,13 @@
     <VerticalStackLayout Padding="20"
                          Spacing="20">
         <Label Text="ButtonSam" />
-        <sbutton:Button CornerRadius="50"
-                        HeightRequest="100"
+        <sbutton:Button HeightRequest="50"
+                        Margin="10"
+                        IsAutoCircle="True"
                         WidthRequest="100">
-            <Label Text="Hello" 
-                   HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"/>
+            <Label HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   Text="Hello" />
         </sbutton:Button>
 
         <Label Text="MAUI Button (for compare)" />

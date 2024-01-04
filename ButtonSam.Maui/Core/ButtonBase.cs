@@ -1,8 +1,11 @@
 ﻿using ButtonSam.Maui.Core;
+using Microsoft.Maui.Controls.Platform;
+using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +14,7 @@ using System.Windows.Input;
 namespace ButtonSam.Maui.Core
 {
     [ContentProperty("Content")]
-    public abstract class ButtonBase : Layout, ILayoutManager
+    public abstract class ButtonBase : Layout, ILayoutManager, IPadding
     {
 #if __MOBILE__
         protected const float _touchSlop = 10;
@@ -35,9 +38,9 @@ namespace ButtonSam.Maui.Core
             new Thickness(10),
             propertyChanged: (b, o, n) =>
             {
-                if (b is IView view)
+                if (b is Layout self)
                 {
-                    ((Layout)view).Padding = (Thickness)n;
+                    self.Padding = ((Thickness)n);
                 }
             }
         );
@@ -192,7 +195,7 @@ namespace ButtonSam.Maui.Core
             return this;
         }
 
-        public Size ArrangeChildren(Rect bounds)
+        public virtual Size ArrangeChildren(Rect bounds)
         {
             if (Content is IView cv)
             {
@@ -200,6 +203,13 @@ namespace ButtonSam.Maui.Core
                 double y = Padding.Top;
                 double w = bounds.Width - Padding.HorizontalThickness;
                 double h = bounds.Height - Padding.VerticalThickness;
+
+                if (w < cv.DesiredSize.Width)
+                    w = cv.DesiredSize.Width;
+
+                if (h < cv.DesiredSize.Height)
+                    h = cv.DesiredSize.Height;
+
                 var rect = new Rect(x, y, w, h);
                 cv.Arrange(rect);
             }
@@ -207,7 +217,7 @@ namespace ButtonSam.Maui.Core
             return bounds.Size;
         }
 
-        public Size Measure(double widthConstraint, double heightConstraint)
+        public virtual Size Measure(double widthConstraint, double heightConstraint)
         {
             var freeWidth = widthConstraint - Padding.HorizontalThickness;
             var freeHeight = heightConstraint - Padding.VerticalThickness;
@@ -265,6 +275,13 @@ namespace ButtonSam.Maui.Core
 
         protected virtual void OnGesturePressed(InteractiveEventArgs args)
         {
+            if (!IsPressed)
+            {
+                bool isPressedToInteractive = this.HitTestToInteractive(new Point(args.X, args.Y));
+                if (isPressedToInteractive)
+                    return;
+            }
+
             StartX = args.X;
             StartY = args.Y;
             IsPressed = true;
@@ -288,7 +305,19 @@ namespace ButtonSam.Maui.Core
             if (deltaX > _touchSlop || deltaY > _touchSlop)
                 IsPressed = false;
 
-            if (args.DeviceInputType == DeviceInputTypes.Mouse)
+            bool processedMouseOver = args.DeviceInputType == DeviceInputTypes.Mouse;
+            if (processedMouseOver && !IsPressed)
+            {
+                bool matchInteractive = this.HitTestToInteractive(new Point(args.X, args.Y));
+                if (matchInteractive)
+                {
+                    IsMouseOver = false;
+                    processedMouseOver = false;
+                    Debug.WriteLine($"Match oclusion by move");
+                }
+            }
+
+            if (processedMouseOver)
                 IsMouseOver = new Rect(0, 0, Frame.Width, Frame.Height).Contains(args.X, args.Y);
             else
                 IsMouseOver = false;
@@ -342,5 +371,93 @@ namespace ButtonSam.Maui.Core
                 from.Alpha + percent * (to.Alpha - from.Alpha)
             );
         }
+
+        public static bool HitTestToInteractive(this Layout self, Point point)
+        {
+#if ANDROID
+            return false;
+#endif
+            double den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+            double x = point.X * den;
+            double y = point.Y * den;
+
+            List<View> hitTestResult;
+#if WINDOWS
+            hitTestResult = HitTest(self, x, y);
+#else
+            hitTestResult = [];
+#endif
+
+            foreach (var v in hitTestResult)
+            {
+                if (v == self)
+                    continue;
+
+                if (v.InputTransparent)
+                    continue;
+
+                if (v.GestureRecognizers.Count > 0)
+                    return true;
+
+                switch (v)
+                {
+                    case ButtonBase:
+                    case ICheckBox:
+                    case ISwitch:
+                    case IDatePicker:
+                    case ITimePicker:
+                        return true;
+
+                    default:
+                        break;
+                }
+            }
+            return false;
+        }
+
+#if WINDOWS
+        public static List<View> HitTest(View from, double x, double y)
+        {
+            double xp = x;
+            double yp = y;
+
+            var winhandl = Application.Current?.Windows.LastOrDefault()?.Handler as WindowHandler;
+            var win = winhandl?.PlatformView;
+            if (win == null)
+                return [];
+
+            if (from.Handler?.PlatformView is not Microsoft.UI.Xaml.UIElement native)
+                return [];
+
+            var transform = native.TransformToVisual(win.Content);
+            var transpoint = transform.TransformPoint(new Windows.Foundation.Point(0, 0));
+            xp += transpoint.X;
+            yp += transpoint.Y;
+
+            var res = Microsoft.UI.Xaml.Media.VisualTreeHelper
+                .FindElementsInHostCoordinates(
+                    new Windows.Foundation.Point(xp, yp), 
+                    native
+                );
+            var tree = from.GetVisualTreeDescendants().ToList();
+            var hitTestResult = new List<View>();
+
+            if (res != null)
+            {
+                foreach (var element in res)
+                {
+                    var match = tree.FirstOrDefault(x => (x as View)?.Handler?.PlatformView == element);
+                    if (match != null)
+                    {
+                        hitTestResult.Add((View)match);
+                        tree.Remove(match);
+                    }
+                }
+            }
+
+            hitTestResult.Reverse();
+            return hitTestResult;
+        }
+#endif
     }
 }
