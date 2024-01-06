@@ -141,7 +141,7 @@ public static class ViewExtensions
 #if WINDOWS
         hitTestResult = HitTest(self, x, y);
 #else
-        hitTestResult = [];
+        hitTestResult = new List<View>();
 #endif
 
         foreach (var v in hitTestResult)
@@ -180,10 +180,10 @@ public static class ViewExtensions
         var winhandl = Application.Current?.Windows.LastOrDefault()?.Handler as WindowHandler;
         var win = winhandl?.PlatformView;
         if (win == null)
-            return [];
+            return new List<View>();
 
         if (from.Handler?.PlatformView is not Microsoft.UI.Xaml.UIElement native)
-            return [];
+            return new List<View>();
 
         var transform = native.TransformToVisual(win.Content);
         var transpoint = transform.TransformPoint(new Windows.Foundation.Point(0, 0));

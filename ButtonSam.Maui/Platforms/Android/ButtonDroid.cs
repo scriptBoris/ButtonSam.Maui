@@ -32,7 +32,7 @@ public class ButtonDroid : LayoutViewGroup
     private readonly APath _pathBorders = new();
     private readonly double _density;
     private CornerRadius _cornerRadius;
-    private float[] corners = [];
+    private float[] corners = Array.Empty<float>();
 
     public ButtonDroid(ButtonHandler handler, Context context) : base(context)
     {
@@ -73,13 +73,13 @@ public class ButtonDroid : LayoutViewGroup
             var cornerBR = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomRight, metrics);
             var cornerBL = TypedValue.ApplyDimension(ComplexUnitType.Dip, (float)value.BottomLeft, metrics);
 
-            corners =
-            [
+            corners = new float[]
+            {
                 cornerTL, cornerTL,
                 cornerTR, cornerTR,
                 cornerBR, cornerBR,
                 cornerBL, cornerBL,
-            ];
+            };
             this.Invalidate();
         }
     }
@@ -123,8 +123,11 @@ public class ButtonDroid : LayoutViewGroup
         );
     }
 
-    public override void Draw(Canvas canvas)
+    public override void Draw(Canvas? canvas)
     {
+        if (canvas == null)
+            return;
+
         var rect = (HasCornerRadius || HasBorders) ? new ARectF(0, 0, Width, Height) : null;
 
         if (HasCornerRadius)

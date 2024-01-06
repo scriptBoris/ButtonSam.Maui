@@ -298,16 +298,10 @@ public class Button : ButtonBase
         {
             IsPressed = false;
 
-
             if (args.IsRealCallback)
             {
                 AnimationPressedRestore(args.X, args.Y);
-
-                if (TapCommand == null || !IsEnabled)
-                    return;
-
-                if (TapCommand.CanExecute(TapCommandParameter))
-                    TapCommand.Execute(TapCommandParameter);
+                OnTapCompleted();
             }
             else
             {
@@ -343,5 +337,14 @@ public class Button : ButtonBase
         IsMouseOver = false;
         IsPressed = false;
         RestoreButton();
+    }
+
+    protected virtual void OnTapCompleted()
+    {
+        if (TapCommand == null || !IsEnabled)
+            return;
+
+        if (TapCommand.CanExecute(TapCommandParameter))
+            TapCommand.Execute(TapCommandParameter);
     }
 }
