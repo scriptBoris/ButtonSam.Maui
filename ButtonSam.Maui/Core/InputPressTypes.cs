@@ -9,7 +9,7 @@ namespace ButtonSam.Maui.Core;
 public enum InputTypes
 {
     None,
-    Touch,
+    TouchTap,
     MouseLeftButton,
     MouseRightButton,
     MouseMiddleButton,

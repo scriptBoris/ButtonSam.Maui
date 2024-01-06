@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace ButtonSam.Maui.Core;
 
-public struct InteractiveEventArgs
+public class InteractiveEventArgs
 {
-    public required float X { get; set; }
-    public required float Y { get; set; }
-    public required GestureTypes State { get; set; }
-    public required InputTypes InputType { get; set; }
-    public required DeviceInputTypes DeviceInputType { get; set; }
+    public required float X { get; init; }
+    public required float Y { get; init; }
+    public required GestureTypes State { get; init; }
+    public required InputTypes InputType { get; init; }
+    public required DeviceInputTypes DeviceInputType { get; init; }
+    public bool IsRealState { get; init; } = true;
+
+    public float? OverrideX { get; set; }
+    public float? OverrideY { get; set; }
+    public GestureTypes? NextFakeState { get; set; }
 }

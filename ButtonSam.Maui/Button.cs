@@ -15,7 +15,39 @@ public class Button : ButtonBase
 {
     protected const string animationName = "SBAnim";
 
+#if __MOBILE__
+    protected const float _touchSlop = 10;
+#else
+    protected const float _touchSlop = 10000;
+#endif
+
     #region bindable props
+    // tap command
+    public static readonly BindableProperty TapCommandProperty = BindableProperty.Create(
+        nameof(TapCommand),
+        typeof(ICommand),
+        typeof(Button),
+        null
+    );
+    public ICommand? TapCommand
+    {
+        get => GetValue(TapCommandProperty) as ICommand;
+        set => SetValue(TapCommandProperty, value);
+    }
+
+    // tap command parameter
+    public static readonly BindableProperty TapCommandParameterProperty = BindableProperty.Create(
+        nameof(TapCommandParameter),
+        typeof(object),
+        typeof(Button),
+        null
+    );
+    public object? TapCommandParameter
+    {
+        get => GetValue(TapCommandParameterProperty);
+        set => SetValue(TapCommandParameterProperty, value);
+    }
+
     // is auto circle
     public static readonly BindableProperty IsAutoCircleProperty = BindableProperty.Create(
         nameof(IsAutoCircle),
@@ -37,21 +69,12 @@ public class Button : ButtonBase
     }
     #endregion bindable props
 
-    protected bool IsRippleEffectSupport
-    {
-        get
-        {
-#if ANDROID
-            return Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Lollipop && TryRippleEffect;
-#else
-            return false;
-#endif
-        }
-    }
     protected virtual bool IsAnimating => this.AnimationIsRunning(animationName);
     protected Color? MouseOverColor { get; private set; }
     protected Color EndAnimationColor { get; private set; } = Colors.Transparent;
     protected double AnimationProgress { get; private set; }
+    protected float StartX { get; private set; }
+    protected float StartY { get; private set; }
 
     protected override void OnPropertyChanged(string propertyName)
     {
@@ -72,7 +95,7 @@ public class Button : ButtonBase
 
     protected override void OnSizeAllocated(double width, double height)
     {
-        base.OnSizeAllocated(width, height); 
+        base.OnSizeAllocated(width, height);
 
         if (IsAutoCircle)
         {
@@ -81,22 +104,19 @@ public class Button : ButtonBase
         }
     }
 
-    protected virtual void AnimationPropertyColor(Color color)
+    private void UpdateAutoCircle(double w, double h)
     {
-        DirectChangeBackgroundColor(color);
+        double max = Math.Max(w, h);
+        if (max > 0)
+        {
+            CornerRadius = max / 2;
+        }
     }
 
-    protected virtual void AnimationFrame(double x)
-    {
-        var from = MouseOverColor ?? BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
-        var to = EndAnimationColor;
-        var result = from.ApplyTint(to, x);
-        AnimationPropertyColor(result);
-    }
-
+    #region maui animations
     protected virtual Task<bool> MauiAnimationPressed()
     {
-        return this.TransitAnimation(animationName, AnimationProgress, 1, 180, Easing.Default,
+        return this.TransitAnimation(animationName, AnimationProgress, 1, 180, Easing.SinIn,
             (x) =>
             {
                 AnimationFrame(x);
@@ -114,37 +134,45 @@ public class Button : ButtonBase
             });
     }
 
-    public virtual async void OnAnimationStart()
+    protected virtual void AnimationFrame(double x)
     {
-        if (!IsEnabled)
-            return;
-
-        bool isRipple = TryAnimationRippleStart(StartX, StartY);
-        if (!isRipple)
-        {
-            StopAnim();
-            UpdateEndAnimationColor();
-
-            bool complete = await MauiAnimationPressed();
-            if (complete && !IsPressed)
-                _ = MauiAnimationReleased();
-        }
+        var from = MouseOverColor ?? BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
+        var to = EndAnimationColor;
+        var result = from.ApplyTint(to, x);
+        AnimationPropertyColor(result);
     }
 
-    public virtual void OnAnimationFinish()
+    protected virtual void AnimationPropertyColor(Color color)
     {
-        if (!IsEnabled)
-            return;
-
-        bool isRipple = TryAnimationRippleFinish();
-        if (!isRipple)
-        {
-            if (IsAnimating)
-                return;
-
-            _ = MauiAnimationReleased();
-        }
+        DirectChangeBackgroundColor(color);
     }
+    #endregion maui animations
+
+    #region ripple animations
+    protected virtual bool TryAnimationRippleStart(float x, float y)
+    {
+#if ANDROID
+        if (TryRippleEffect && Handler is Platforms.Android.ButtonHandler handler)
+        {
+            handler.AnimationRippleStart(x, y);
+            return true;
+        }
+#endif
+        return false;
+    }
+
+    protected virtual bool TryAnimationRippleFinish()
+    {
+#if ANDROID
+        if (TryRippleEffect && Handler is Platforms.Android.ButtonHandler handler)
+        {
+            handler.AnimationRippleEnd();
+            return true;
+        }
+#endif
+        return false;
+    }
+    #endregion ripple animations
 
     private void UpdateMouseOverColor()
     {
@@ -159,81 +187,36 @@ public class Button : ButtonBase
         EndAnimationColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.7);
     }
 
-    protected virtual bool TryAnimationRippleStart(float x, float y)
+    protected virtual async void AnimationPressedStart(float x, float y)
     {
-        if (Handler is IButtonHandler handler)
-            return handler.TryAnimationRippleStart(x, y);
-        return false;
-    }
-
-    protected virtual bool TryAnimationRippleFinish()
-    {
-        if (Handler is IButtonHandler handler)
-            return handler.TryAnimationRippleEnd();
-        return false;
-    }
-
-    protected override void OnGesturePressed(InteractiveEventArgs args)
-    {
-        if (args.DeviceInputType == DeviceInputTypes.Mouse && args.InputType != InputTypes.MouseLeftButton)
+        if (!IsEnabled)
             return;
 
-        bool oldIsPressed = IsPressed;
-        base.OnGesturePressed(args);
-
-        if (IsEnabled && oldIsPressed != IsPressed)
-            OnAnimationStart();
-    }
-
-    protected override void OnGestureRelease(InteractiveEventArgs args)
-    {
-        bool oldIsPressed = IsPressed;
-        base.OnGestureRelease(args);
-
-        if (oldIsPressed != IsPressed)
-            OnAnimationFinish();
-    }
-
-    protected override void OnGestureReleaseCanceled(InteractiveEventArgs args)
-    {
-        bool oldIsPressed = IsPressed;
-        base.OnGestureReleaseCanceled(args);
-
-        if (oldIsPressed != IsPressed)
-            OnAnimationFinish();
-    }
-
-    protected override void OnGestureMove(InteractiveEventArgs args)
-    {
-        bool oldIsMouseOver = IsMouseOver;
-        bool oldIsPressed = IsPressed;
-        base.OnGestureMove(args);
-
-        if (oldIsPressed != IsPressed)
+        bool isRipple = TryAnimationRippleStart(x, y);
+        if (!isRipple)
         {
-            OnAnimationFinish();
-            return;
-        }
+            AnimationStop();
+            UpdateEndAnimationColor();
 
-        if (IsPressed || IsRippleEffectSupport)
-            return;
-
-        if (oldIsMouseOver != IsMouseOver)
-        {
-            if (IsMouseOver && IsEnabled)
-                AnimationMouseOverStart();
-            else if (!IsMouseOver)
-                AnimationMouseOverRestore();
+            bool complete = await MauiAnimationPressed();
+            if (complete && !IsPressed)
+                _ = MauiAnimationReleased();
         }
     }
 
-    protected override void OnGestureMoveCanceled(InteractiveEventArgs args)
+    protected virtual void AnimationPressedRestore(float x, float y)
     {
-        bool oldIsMouseOver = IsMouseOver;
-        base.OnGestureMoveCanceled(args);
+        if (!IsEnabled)
+            return;
 
-        if (oldIsMouseOver != IsMouseOver)
-            AnimationMouseOverRestore();
+        bool isRipple = TryAnimationRippleFinish();
+        if (!isRipple)
+        {
+            if (IsAnimating)
+                return;
+
+            _ = MauiAnimationReleased();
+        }
     }
 
     protected virtual void AnimationMouseOverStart()
@@ -250,17 +233,115 @@ public class Button : ButtonBase
             DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
     }
 
-    protected virtual void StopAnim()
+    protected virtual void AnimationStop()
     {
         this.AbortAnimation(animationName);
+        AnimationProgress = 0;
+        TryAnimationRippleFinish();
     }
 
-    private void UpdateAutoCircle(double w, double h)
+    protected virtual void RestoreButton()
     {
-        double max = Math.Max(w, h);
-        if (max > 0)
+        AnimationStop();
+        DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
+    }
+
+    // gestures
+    protected override bool OnGesturePressed(InteractiveEventArgs args)
+    {
+        if (args.DeviceInputType == DeviceInputTypes.Mouse && args.InputType != InputTypes.MouseLeftButton)
         {
-            CornerRadius = max / 2;
+            return false;
         }
+
+        return base.OnGesturePressed(args);
+    }
+
+    protected override bool OnGestureRelease(InteractiveEventArgs args)
+    {
+        return base.OnGestureRelease(args);
+    }
+
+    protected override bool OnGestureRunning(InteractiveEventArgs args)
+    {
+        float deltaX = Math.Abs(StartX - args.X);
+        float deltaY = Math.Abs(StartY - args.Y);
+        if (IsPressed && (deltaX > _touchSlop || deltaY > _touchSlop))
+        {
+            args.NextFakeState = GestureTypes.Release;
+            return false;
+        }
+
+        return base.OnGestureRunning(args);
+    }
+
+    protected override bool OnGestureExited(InteractiveEventArgs args)
+    {
+        if (IsPressed)
+            args.NextFakeState = GestureTypes.Release;
+
+        return base.OnGestureExited(args);
+    }
+
+    // callbacks
+    protected override void CallbackPressed(CallbackEventArgs args)
+    {
+        StartX = args.X;
+        StartY = args.Y;
+        IsPressed = true;
+        AnimationPressedStart(args.X, args.Y);
+    }
+
+    protected override void CallbackRelease(CallbackEventArgs args)
+    {
+        if (IsPressed)
+        {
+            IsPressed = false;
+
+
+            if (args.IsRealCallback)
+            {
+                AnimationPressedRestore(args.X, args.Y);
+
+                if (TapCommand == null || !IsEnabled)
+                    return;
+
+                if (TapCommand.CanExecute(TapCommandParameter))
+                    TapCommand.Execute(TapCommandParameter);
+            }
+            else
+            {
+                RestoreButton();
+            }
+        }
+    }
+
+    protected override void CallbackRunning(CallbackEventArgs args)
+    {
+    }
+
+    protected override void CallbackEntered(CallbackEventArgs args)
+    {
+        if (!IsMouseOver && IsEnabled)
+        {
+            IsMouseOver = true;
+            AnimationMouseOverStart();
+        }
+    }
+
+    protected override void CallbackExited(CallbackEventArgs args)
+    {
+        if (IsMouseOver)
+        {
+            IsMouseOver = false;
+            AnimationMouseOverRestore();
+        }
+    }
+
+    protected override void CallbackCanceled(CallbackEventArgs args)
+    {
+        IsMouseOver = false;
+        IsPressed = false;
+        RestoreButton();
     }
 }

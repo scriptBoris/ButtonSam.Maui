@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
-             x:Class="Sample.ButtonRoundedPage"
-             Title="ButtonRoundedPage">
-    <VerticalStackLayout Padding="20"
-                         Spacing="20">
+<ContentPage
+    x:Class="Sample.ButtonRoundedPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+    Title="ButtonRoundedPage">
+    <VerticalStackLayout Padding="20" Spacing="20">
         <Label Text="ButtonSam" />
-        <sbutton:Button HeightRequest="50"
-                        Margin="10"
-                        IsAutoCircle="True"
-                        WidthRequest="100">
-            <Label HorizontalTextAlignment="Center"
-                   VerticalTextAlignment="Center"
-                   Text="Hello" />
+        <sbutton:Button
+            Margin="10"
+            HeightRequest="100"
+            IsAutoCircle="True"
+            WidthRequest="100">
+            <Label
+                HorizontalTextAlignment="Center"
+                Text="Hello"
+                VerticalTextAlignment="Center" />
         </sbutton:Button>
 
         <Label Text="MAUI Button (for compare)" />
-        <Button CornerRadius="50"
-                HeightRequest="100"
-                Text="Hello"
-                WidthRequest="100" />
+        <Button
+            CornerRadius="50"
+            HeightRequest="100"
+            Text="Hello"
+            WidthRequest="100" />
     </VerticalStackLayout>
 </ContentPage>

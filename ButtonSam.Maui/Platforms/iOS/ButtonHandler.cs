@@ -67,16 +67,6 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         DirectSetBackgroundColor(color);
     }
 
-    public bool TryAnimationRippleStart(float x, float y)
-    {
-        return false;
-    }
-
-    public bool TryAnimationRippleEnd()
-    {
-        return false;
-    }
-
     public virtual void DirectSetBackgroundColor(Color color)
     {
         Native?.SetupBackground(color.ToPlatform());
@@ -84,10 +74,15 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
 
     protected virtual bool ShouldRecognizeSimultaneously(UIGestureRecognizer buttonGesture, UIGestureRecognizer other)
     {
-        //Console.WriteLine($"a = {buttonGesture.GetType().Name}");
-        //Console.WriteLine($"b = {other.GetType().Name}");
-        //Console.WriteLine($"a state = {buttonGesture.State}");
-        //Console.WriteLine($"b state = {other.State}");
+#if DEBUG
+        if (Initializer.UseDebugInfo)
+        {
+            Console.WriteLine($"a = {buttonGesture.GetType().Name}");
+            Console.WriteLine($"b = {other.GetType().Name}");
+            Console.WriteLine($"a state = {buttonGesture.State}");
+            Console.WriteLine($"b state = {other.State}");
+        }
+#endif
 
         if (other.State == UIGestureRecognizerState.Began)
             buttonGesture.State = UIGestureRecognizerState.Failed;
@@ -109,8 +104,8 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                     X = x,
                     Y = y,
                     State = GestureTypes.Pressed,
-                    InputType = InputTypes.Touch,
-                    DeviceInputType = DeviceInputTypes.Touch,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
                 });
                 break;
 
@@ -123,9 +118,9 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                     {
                         X = x,
                         Y = y,
-                        State = GestureTypes.ReleaseCanceled,
-                        InputType = InputTypes.None,
-                        DeviceInputType = DeviceInputTypes.Touch,
+                        State = GestureTypes.Canceled,
+                        InputType = InputTypes.TouchTap,
+                        DeviceInputType = DeviceInputTypes.TouchScreen
                     });
                 }
                 break;
@@ -135,9 +130,9 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                 {
                     X = x,
                     Y = y,
-                    State = GestureTypes.ReleaseCompleted,
-                    InputType = InputTypes.Touch,
-                    DeviceInputType = DeviceInputTypes.Touch,
+                    State = GestureTypes.Release,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
                 });
                 break;
 
@@ -147,9 +142,9 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                 {
                     X = x,
                     Y = y,
-                    State = GestureTypes.ReleaseCanceled,
-                    InputType = InputTypes.Touch,
-                    DeviceInputType = DeviceInputTypes.Touch,
+                    State = GestureTypes.Canceled,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
                 });
                 break;
             default:

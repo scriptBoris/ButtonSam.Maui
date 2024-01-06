@@ -9,8 +9,9 @@ namespace ButtonSam.Maui.Core;
 public enum GestureTypes
 {
     Pressed,
+    Release,
     Running,
-    RunningCanceled,
-    ReleaseCompleted,
-    ReleaseCanceled,
+    Entered,
+    Exited,
+    Canceled,
 }

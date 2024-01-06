@@ -9,16 +9,20 @@ namespace ButtonSam.Maui;
 
 public static class Initializer
 {
-    public static MauiAppBuilder UseButtonSam(this MauiAppBuilder builder)
+    internal static bool UseDebugInfo { get; private set; }
+
+    public static MauiAppBuilder UseButtonSam(this MauiAppBuilder builder, bool useDebugOutputInfo = false)
     {
+        UseDebugInfo = useDebugOutputInfo;
+
         builder.ConfigureMauiHandlers(x =>
         {
 #if ANDROID
-            x.AddHandler(typeof(ButtonBase), typeof(Platforms.Android.ButtonHandler));
+            x.AddHandler(typeof(InteractiveContainer), typeof(Platforms.Android.ButtonHandler));
 #elif IOS
-            x.AddHandler(typeof(ButtonBase), typeof(Platforms.iOS.ButtonHandler));
+            x.AddHandler(typeof(InteractiveContainer), typeof(Platforms.iOS.ButtonHandler));
 #elif WINDOWS
-            x.AddHandler(typeof(ButtonBase), typeof(Platforms.Windows.ButtonHandler));
+            x.AddHandler(typeof(InteractiveContainer), typeof(Platforms.Windows.ButtonHandler));
 #else
             throw new NotImplementedException();
 #endif

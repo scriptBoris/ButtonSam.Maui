@@ -8,7 +8,7 @@ namespace ButtonSam.Maui.Core;
 
 public enum DeviceInputTypes
 {
-    None,
-    Touch,
+    Unknown,
+    TouchScreen,
     Mouse,
 }

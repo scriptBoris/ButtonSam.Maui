@@ -22,19 +22,18 @@ namespace ButtonSam.Maui.Platforms.Windows;
 public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandler
 {
     private InputTypes pressedInputType = InputTypes.None;
-    private bool isPressed;
 
     public ButtonHandler() : base(PropertyMapper)
     {
     }
 
-    public static readonly PropertyMapper<ButtonBase, ButtonHandler> PropertyMapper = new(ViewMapper)
+    public static readonly PropertyMapper<InteractiveContainer, ButtonHandler> PropertyMapper = new(ViewMapper)
     {
-        [nameof(ButtonBase.BackgroundColor)] = (h, v) =>
+        [nameof(InteractiveContainer.BackgroundColor)] = (h, v) =>
         {
             h.DirectSetBackgroundColor(v.BackgroundColor);
         },
-        [nameof(ButtonBase.CornerRadius)] = (h, v) =>
+        [nameof(InteractiveContainer.CornerRadius)] = (h, v) =>
         {
             if (h.Wrapper != null)
                 h.Wrapper.CornerRadius = new WCornerRadius
@@ -45,7 +44,7 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                     BottomLeft = v.CornerRadius.BottomLeft,
                 };
         },
-        [nameof(ButtonBase.BorderWidth)] = (h, v) =>
+        [nameof(InteractiveContainer.BorderWidth)] = (h, v) =>
         {
             if (h.Wrapper == null)
                 return;
@@ -60,7 +59,7 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                 h.Wrapper.BorderThickness = new WThickness(0);
             }
         },
-        [nameof(ButtonBase.BorderColor)] = (h, v) =>
+        [nameof(InteractiveContainer.BorderColor)] = (h, v) =>
         {
             if (h.Wrapper == null)
                 return;
@@ -78,7 +77,7 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
     };
 
     public override bool NeedsContainer => true;
-    public ButtonBase Proxy => (ButtonBase)VirtualView;
+    public InteractiveContainer Proxy => (InteractiveContainer)VirtualView;
     public WrapperView? Wrapper => ContainerView as WrapperView;
     public bool IsUseBorder => Proxy.BorderColor != null && Proxy.BorderWidth > 0;
 
@@ -109,16 +108,30 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
     }
 
     #region touch handles
-
     private void N_PointerCanceled(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
+        var point = e.GetCurrentPoint((UIElement)sender);
+        float x = (float)point.Position.X;
+        float y = (float)point.Position.Y;
+
+#if DEBUG
+        if (Initializer.UseDebugInfo)
+        {
+            System.Diagnostics.Debug.WriteLine("Pointer is canceled");
+        }
+#endif
+
+        Proxy.OnInteractive(new InteractiveEventArgs
+        {
+            X = x,
+            Y = y,
+            State = GestureTypes.Canceled,
+            InputType = GetInputType(point),
+            DeviceInputType = GetDeviceInputType(point)
+        });
     }
 
     private void N_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-    }
-
-    private void N_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
@@ -127,9 +140,9 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         {
             X = x,
             Y = y,
-            State = GestureTypes.Running,
-            InputType = InputTypes.None,
-            DeviceInputType = GetDeviceInputType(point),
+            State = GestureTypes.Entered,
+            InputType = GetInputType(point),
+            DeviceInputType = GetDeviceInputType(point)
         });
     }
 
@@ -138,27 +151,36 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
-
-        if (isPressed)
+        Proxy.OnInteractive(new InteractiveEventArgs
         {
-            isPressed = false;
-            Proxy.OnInteractive(new InteractiveEventArgs
-            {
-                X = x,
-                Y = y,
-                State = GestureTypes.ReleaseCanceled,
-                InputType = pressedInputType,
-                DeviceInputType = GetDeviceInputType(point),
-            });
+            X = x,
+            Y = y,
+            State = GestureTypes.Exited,
+            InputType = GetInputType(point),
+            DeviceInputType = GetDeviceInputType(point)
+        });
+    }
+
+    private void N_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        var point = e.GetCurrentPoint((UIElement)sender);
+        float x = (float)point.Position.X;
+        float y = (float)point.Position.Y;
+
+#if DEBUG
+        if (Initializer.UseDebugInfo)
+        {
+            System.Diagnostics.Debug.WriteLine($"pointer moved: x{x}; y{y}");
         }
+#endif
 
         Proxy.OnInteractive(new InteractiveEventArgs
         {
             X = x,
             Y = y,
-            State = GestureTypes.RunningCanceled,
-            InputType = InputTypes.None,
-            DeviceInputType = GetDeviceInputType(point),
+            State = GestureTypes.Running,
+            InputType = pressedInputType,
+            DeviceInputType = GetDeviceInputType(point)
         });
     }
 
@@ -169,14 +191,13 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         float y = (float)point.Position.Y;
 
         pressedInputType = GetInputType(point);
-        isPressed = true;
         Proxy.OnInteractive(new InteractiveEventArgs
         {
             X = x,
             Y = y,
             State = GestureTypes.Pressed,
             InputType = pressedInputType,
-            DeviceInputType = GetDeviceInputType(point),
+            DeviceInputType = GetDeviceInputType(point)
         });
     }
 
@@ -186,14 +207,13 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
 
-        isPressed = false;
         Proxy.OnInteractive(new InteractiveEventArgs
         {
             X = x,
             Y = y,
-            State = GestureTypes.ReleaseCompleted,
-            InputType = pressedInputType,
-            DeviceInputType = GetDeviceInputType(point),
+            State = GestureTypes.Release,
+            InputType = GetInputType(point),
+            DeviceInputType = GetDeviceInputType(point)
         });
     }
     #endregion touch handles
@@ -201,17 +221,7 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
     public void DirectSetBackgroundColor(Color color)
     {
         if (Wrapper != null)
-            Wrapper.Background = (color ?? ButtonBase.DefaultBackgroundColor).ToPlatform();
-    }
-
-    public bool TryAnimationRippleStart(float x, float y)
-    {
-        return false;
-    }
-
-    public bool TryAnimationRippleEnd()
-    {
-        return false;
+            Wrapper.Background = (color ?? InteractiveContainer.DefaultBackgroundColor).ToPlatform();
     }
 
     private static InputTypes GetInputType(Microsoft.UI.Input.PointerPoint p)
@@ -230,7 +240,7 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
 
                 break;
             default:
-                return InputTypes.Touch;
+                return InputTypes.TouchTap;
         }
         return InputTypes.None;
     }
@@ -243,10 +253,10 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             case Microsoft.UI.Input.PointerDeviceType.Touchpad:
                 return DeviceInputTypes.Mouse;
             case Microsoft.UI.Input.PointerDeviceType.Touch:
-                return DeviceInputTypes.Touch;
+                return DeviceInputTypes.TouchScreen;
 
             default:
-                return DeviceInputTypes.None;
+                return DeviceInputTypes.Unknown;
         }
     }
 }

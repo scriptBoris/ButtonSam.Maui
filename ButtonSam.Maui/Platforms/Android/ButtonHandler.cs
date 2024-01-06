@@ -28,37 +28,37 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
     {
     }
 
-    public static readonly PropertyMapper<ButtonBase, ButtonHandler> PropertyMapper = new(ViewMapper)
+    public static readonly PropertyMapper<InteractiveContainer, ButtonHandler> PropertyMapper = new(ViewMapper)
     {
-        [nameof(ButtonBase.BackgroundColor)] = (h, v) =>
+        [nameof(InteractiveContainer.BackgroundColor)] = (h, v) =>
         {
             if (h.Native != null)
             {
-                var color = v.BackgroundColor ?? ButtonBase.DefaultBackgroundColor;
+                var color = v.BackgroundColor ?? InteractiveContainer.DefaultBackgroundColor;
                 h.Native.SetupBackgroundColor(color.ToPlatform());
             }
         },
-        [nameof(ButtonBase.CornerRadius)] = (h, v) =>
+        [nameof(InteractiveContainer.CornerRadius)] = (h, v) =>
         {
             if (h.Native != null)
                 h.Native.CornerRadius = v.CornerRadius;
         },
-        [nameof(ButtonBase.BorderColor)] = (h, v) =>
+        [nameof(InteractiveContainer.BorderColor)] = (h, v) =>
         {
             h.Native?.Invalidate();
         },
-        [nameof(ButtonBase.BorderWidth)] = (h, v) =>
+        [nameof(InteractiveContainer.BorderWidth)] = (h, v) =>
         {
             h.Native?.Invalidate();
         },
-        [nameof(ButtonBase.TapColor)] = (h, v) =>
+        [nameof(InteractiveContainer.TapColor)] = (h, v) =>
         {
             if (h.Native != null && v.TryRippleEffect)
                 h.Native.SetRippleColor(v.TapColor.ToPlatform());
         }
     };
 
-    public ButtonBase Proxy => (ButtonBase)VirtualView;
+    public InteractiveContainer Proxy => (InteractiveContainer)VirtualView;
     public ButtonDroid? Native => PlatformView as ButtonDroid;
 
     public void DirectSetBackgroundColor(Microsoft.Maui.Graphics.Color color)
@@ -67,23 +67,18 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             Native.SetupBackgroundColor(color.ToPlatform());
     }
 
-    public bool TryAnimationRippleStart(float x, float y)
+    public void AnimationRippleStart(float x, float y)
     {
-        if (!Proxy.TryRippleEffect)
-            return false;
-
         float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
         x *= den;
         y *= den;
 
         Native?.RippleStart(x, y);
-        return true;
     }
 
-    public bool TryAnimationRippleEnd()
+    public void AnimationRippleEnd()
     {
         Native?.RippleFinish();
-        return Proxy.TryRippleEffect;
     }
 
     protected override LayoutViewGroup CreatePlatformView()

@@ -5,12 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ButtonSam.Maui.Core
+namespace ButtonSam.Maui.Core;
+
+public interface IButtonHandler
 {
-    public interface IButtonHandler
-    {
-        void DirectSetBackgroundColor(Color color);
-        bool TryAnimationRippleStart(float x, float y);
-        bool TryAnimationRippleEnd();
-    }
+    void DirectSetBackgroundColor(Color color);
 }
