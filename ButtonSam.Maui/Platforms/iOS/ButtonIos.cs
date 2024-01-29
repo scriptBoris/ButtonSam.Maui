@@ -1,8 +1,12 @@
-﻿using CoreAnimation;
+﻿using ButtonSam.Maui.Core;
+using CoreAnimation;
+using CoreFoundation;
 using CoreGraphics;
+using Foundation;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,14 +17,20 @@ namespace ButtonSam.Maui.Platforms.iOS
     public class ButtonIos : LayoutView
     {
         private readonly CAShapeLayer _maskLayer = new();
+        private readonly ButtonHandler _parent;
         private CornerRadius _cornerRadius;
         private double _borderWidth;
         private UIColor? _borderColor;
 
-        public ButtonIos()
+        public ButtonIos(ButtonHandler parent)
         {
+            _parent = parent;
             Layer.Mask = _maskLayer;
             Layer.EdgeAntialiasingMask = CAEdgeAntialiasingMask.All;
+            Layer.BackgroundColor = Colors.Transparent.ToCGColor();
+            ClipsToBounds = true;
+            UserInteractionEnabled = true;
+            AccessibilityTraits = UIAccessibilityTrait.Button;
         }
 
         public CornerRadius CornerRadius
@@ -99,6 +109,123 @@ namespace ButtonSam.Maui.Platforms.iOS
         {
             base.LayoutSubviews();
             SetNeedsDisplay();
+        }
+
+        public override void TouchesBegan(NSSet touches, UIEvent? evt)
+        {
+            var press = touches.Cast<UITouch>().First();
+            var point = press.LocationInView(this);
+            float x = (float)point.X;
+            float y = (float)point.Y;
+
+#if DEBUG
+            if (Initializer.UseDebugInfo)
+            {
+                Console.WriteLine($"[x{x};y{y}] state Began");
+            }
+#endif
+            _parent.Proxy.OnInteractive(new InteractiveEventArgs
+            {
+                X = x,
+                Y = y,
+                State = GestureTypes.Pressed,
+                InputType = InputTypes.TouchTap,
+                DeviceInputType = DeviceInputTypes.TouchScreen
+            });
+        }
+
+        public override void TouchesMoved(NSSet touches, UIEvent? evt)
+        {
+            var press = touches.Cast<UITouch>().First();
+            var point = press.LocationInView(this);
+            float x = (float)point.X;
+            float y = (float)point.Y;
+
+            if (this.PointInside(point, null))
+            {
+#if DEBUG
+                if (Initializer.UseDebugInfo)
+                {
+                    Console.WriteLine($"[x{x};y{y}] state Moved");
+                }
+#endif
+                _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                {
+                    X = x,
+                    Y = y,
+                    State = GestureTypes.Running,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
+                });
+            }
+            else
+            {
+#if DEBUG
+                if (Initializer.UseDebugInfo)
+                {
+                    Console.WriteLine($"[x{x};y{y}] state Exited");
+                }
+#endif
+                _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                {
+                    X = x,
+                    Y = y,
+                    State = GestureTypes.Exited,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
+                });
+            }
+        }
+
+        public override void TouchesEnded(NSSet touches, UIEvent? evt)
+        {
+            var press = touches.Cast<UITouch>().First();
+            var point = press.LocationInView(this);
+            float x = (float)point.X;
+            float y = (float)point.Y;
+
+#if DEBUG
+            if (Initializer.UseDebugInfo)
+            {
+                Console.WriteLine($"[x{x};y{y}] state Ended");
+            }
+#endif
+            _parent.Proxy.OnInteractive(new InteractiveEventArgs
+            {
+                X = x,
+                Y = y,
+                State = GestureTypes.Release,
+                InputType = InputTypes.TouchTap,
+                DeviceInputType = DeviceInputTypes.TouchScreen
+            });
+        }
+
+        public override void TouchesCancelled(NSSet touches, UIEvent? evt)
+        {
+            var press = touches.Cast<UITouch>().First();
+            var point = press.LocationInView(this);
+            float x = (float)point.X;
+            float y = (float)point.Y;
+
+#if DEBUG
+            if (Initializer.UseDebugInfo)
+            {
+                Console.WriteLine($"[x{x};y{y}] state Cancelled");
+            }
+#endif
+            _parent.Proxy.OnInteractive(new InteractiveEventArgs
+            {
+                X = x,
+                Y = y,
+                State = GestureTypes.Canceled,
+                InputType = InputTypes.TouchTap,
+                DeviceInputType = DeviceInputTypes.TouchScreen
+            });
+        }
+
+        public override void TouchesEstimatedPropertiesUpdated(NSSet touches)
+        {
+            base.TouchesEstimatedPropertiesUpdated(touches);
         }
 
         public static UIBezierPath? RoundedRectWithCustomCorners(CGRect rect, CornerRadius cornerRadius,

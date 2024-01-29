@@ -27,7 +27,7 @@
                            Text="Go to wikipedia"
                            TextColor="Blue">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer />
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
                         </Label.GestureRecognizers>
                     </Label>
                 </ContentView>

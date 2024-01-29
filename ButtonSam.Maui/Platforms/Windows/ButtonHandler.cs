@@ -74,6 +74,18 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                 h.Wrapper.BorderThickness = new WThickness(0);
             }
         },
+        [nameof(InteractiveContainer.InputTransparent)] = (h, v) =>
+        {
+            var native = h.PlatformView;
+            bool enable = !v.InputTransparent;
+            if (native != null)
+            {
+                native.IsHitTestVisible = enable;
+                native.IsTapEnabled = enable;
+                if (h.ContainerView != null)
+                    h.ContainerView.IsHitTestVisible = enable;
+            }
+        },
     };
 
     public override bool NeedsContainer => true;

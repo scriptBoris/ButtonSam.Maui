@@ -14,7 +14,7 @@
                     <ContentView Padding="10">
                         <sbutton:Button TapCommand="{Binding CommandSelectItem, Source={Reference root}}"
                                         TapCommandParameter="{Binding .}">
-                            <Label Text="{Binding .}" />
+                            <Label Text="{Binding .}"/>
                         </sbutton:Button>
                     </ContentView>
                 </DataTemplate>

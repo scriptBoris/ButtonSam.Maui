@@ -6,4 +6,9 @@ public partial class NestedButtonsPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    {
+		DisplayAlert("Info", "You opened Wikipedia", "OK");
+    }
 }

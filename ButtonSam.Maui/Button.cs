@@ -15,7 +15,9 @@ public class Button : ButtonBase
 {
     protected const string animationName = "SBAnim";
 
-#if __MOBILE__
+#if __IOS__
+    protected const float _touchSlop = 1000;
+#elif __ANDROID__
     protected const float _touchSlop = 10;
 #else
     protected const float _touchSlop = 10000;
@@ -72,7 +74,7 @@ public class Button : ButtonBase
     protected virtual bool IsAnimating => this.AnimationIsRunning(animationName);
     protected Color? MouseOverColor { get; private set; }
     protected Color EndAnimationColor { get; private set; } = Colors.Transparent;
-    protected double AnimationProgress { get; private set; }
+    protected double AnimationProgress { get; set; }
     protected float StartX { get; private set; }
     protected float StartY { get; private set; }
 
@@ -187,6 +189,11 @@ public class Button : ButtonBase
         EndAnimationColor = (BackgroundColor ?? ButtonBase.DefaultBackgroundColor).ApplyTint(TapColor, 0.7);
     }
 
+    /// <summary>
+    /// Запускает анимацию нажатия кнопки
+    /// </summary>
+    /// <param name="x">MAUI coordinates</param>
+    /// <param name="y">MAUI coordinates</param>
     protected virtual async void AnimationPressedStart(float x, float y)
     {
         if (!IsEnabled)
@@ -195,7 +202,7 @@ public class Button : ButtonBase
         bool isRipple = TryAnimationRippleStart(x, y);
         if (!isRipple)
         {
-            AnimationStop();
+            AnimationPressedStop();
             UpdateEndAnimationColor();
 
             bool complete = await MauiAnimationPressed();
@@ -204,6 +211,11 @@ public class Button : ButtonBase
         }
     }
 
+    /// <summary>
+    /// Запускает анимацию отжатия кнопки
+    /// </summary>
+    /// <param name="x">MAUI coordinates</param>
+    /// <param name="y">MAUI coordinates</param>
     protected virtual void AnimationPressedRestore(float x, float y)
     {
         if (!IsEnabled)
@@ -219,6 +231,20 @@ public class Button : ButtonBase
         }
     }
 
+    /// <summary>
+    /// Останавливает анимацию нажатия и отжатия
+    /// </summary>
+    protected virtual void AnimationPressedStop()
+    {
+        this.AbortAnimation(animationName);
+        AnimationProgress = 0;
+        TryAnimationRippleFinish();
+    }
+
+    /// <summary>
+    /// Метод запуска анимации (или визуального состояния), когда мышь 
+    /// находится над кнопкой (IsMouseOver == true)
+    /// </summary>
     protected virtual void AnimationMouseOverStart()
     {
         UpdateMouseOverColor();
@@ -226,27 +252,38 @@ public class Button : ButtonBase
             DirectChangeBackgroundColor(MouseOverColor!);
     }
 
+    /// <summary>
+    /// Метод запуска анимации (или визуального состояния), когда мышь
+    /// уже не находится над кнопкой (IsMouseOver == false)
+    /// </summary>
     protected virtual void AnimationMouseOverRestore()
     {
-        UpdateMouseOverColor();
+        MouseOverColor = null;
         if (!IsAnimating)
             DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
     }
 
-    protected virtual void AnimationStop()
+    /// <summary>
+    /// Останавливает анимации IsMouseOver
+    /// </summary>
+    protected virtual void AnimationMouseOverStop()
     {
-        this.AbortAnimation(animationName);
-        AnimationProgress = 0;
-        TryAnimationRippleFinish();
+        MouseOverColor = null;
+        if (!IsAnimating)
+            DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
     }
 
+    /// <summary>
+    /// Останавливает ВСЕ анимации и возвращает состояние кнопки первозданный вид
+    /// </summary>
     protected virtual void RestoreButton()
     {
-        AnimationStop();
+        AnimationPressedStop();
+        AnimationMouseOverStop();
         DirectChangeBackgroundColor(BackgroundColor ?? ButtonBase.DefaultBackgroundColor);
     }
 
-    // gestures
+    #region gestures
     protected override bool OnGesturePressed(InteractiveEventArgs args)
     {
         if (args.DeviceInputType == DeviceInputTypes.Mouse && args.InputType != InputTypes.MouseLeftButton)
@@ -300,8 +337,8 @@ public class Button : ButtonBase
 
             if (args.IsRealCallback)
             {
-                AnimationPressedRestore(args.X, args.Y);
                 OnTapCompleted();
+                AnimationPressedRestore(args.X, args.Y);
             }
             else
             {
@@ -338,6 +375,7 @@ public class Button : ButtonBase
         IsPressed = false;
         RestoreButton();
     }
+    #endregion gestures
 
     protected virtual void OnTapCompleted()
     {

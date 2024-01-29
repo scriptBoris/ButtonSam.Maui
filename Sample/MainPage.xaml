@@ -6,44 +6,51 @@
              Padding="10">
     <ScrollView>
         <StackLayout Spacing="10">
+            <Label x:Name="lbl"
+                   IsVisible="false"
+                   Text="Is realease build"/>
+
             <Button Clicked="Button_Clicked"
-                    Text="Clicker counter" />
+                    Text="Clicker counter"/>
 
             <Button Clicked="Button_Clicked_1"
-                    Text="No ripple effect" />
+                    Text="No ripple effect"/>
 
             <Button Clicked="Button_Clicked_2"
-                    Text="Advance content" />
+                    Text="Advance content"/>
 
             <Button Clicked="Button_Clicked_11"
-                    Text="Rounded button" />
+                    Text="Rounded button"/>
 
             <Button Clicked="Button_Clicked_3"
-                    Text="Fixed size" />
+                    Text="Fixed size"/>
 
             <Button Clicked="Button_Clicked_4"
-                    Text="With borders" />
+                    Text="With borders"/>
 
             <Button Clicked="Button_Clicked_8"
-                    Text="With shadows" />
+                    Text="With shadows"/>
 
             <Button Clicked="Button_Clicked_5"
-                    Text="Custom tap color" />
+                    Text="Custom tap color"/>
 
             <Button Clicked="Button_Clicked_6"
-                    Text="Global style test" />
+                    Text="Global style test"/>
 
             <Button Clicked="Button_Clicked_7"
-                    Text="Disabled button" />
+                    Text="Disabled button"/>
 
             <Button Clicked="Button_Clicked_9"
-                    Text="Multiple buttons" />
+                    Text="Multiple buttons"/>
 
             <Button Clicked="Button_Clicked_10"
-                    Text="Selection buttons" />
+                    Text="Selection buttons"/>
 
             <Button Clicked="Button_Clicked_12"
-                    Text="Nested buttons" />
+                    Text="Nested buttons"/>
+
+            <Button Clicked="Button_Clicked_13"
+                    Text="Input transparent"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>

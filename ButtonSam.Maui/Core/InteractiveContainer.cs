@@ -1,16 +1,26 @@
 ﻿using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ButtonSam.Maui.Core;
 
+/// <summary>
+/// Базовый класс который обеспечивает отрисовку Borders, Corners.
+/// И умеет только получать жесты от платформенных обработчиков.
+/// P.S.
+/// Если вас не устраивает реализации классов ButtonBase или Button, то
+/// вы можете самостоятельно реализовать свой класс кнопки, просто 
+/// наследуя данный класс
+/// </summary>
 [ContentProperty("Content")]
 public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
 {
     public static readonly Color DefaultBackgroundColor = Color.FromArgb("#323232");
+    private GestureTypes? oldState;
 
     public InteractiveContainer()
     {
@@ -179,8 +189,17 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
             bh.DirectSetBackgroundColor(color);
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void OnInteractive(InteractiveEventArgs args)
     {
+        if (args.State != GestureTypes.Running)
+        {
+            if (oldState == args.State)
+                return;
+        }
+
+        oldState = args.State;
+
         bool canRunning = args.State switch
         {
             GestureTypes.Pressed => OnGesturePressed(args),
@@ -240,11 +259,64 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
         }
     }
 
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGesturePressed(InteractiveEventArgs args);
+
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGestureRelease(InteractiveEventArgs args);
+
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGestureRunning(InteractiveEventArgs args);
+
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGestureEntered(InteractiveEventArgs args);
+
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGestureExited(InteractiveEventArgs args);
+
+    /// <summary>
+    /// Allows to control the logic of triggering a callback.
+    /// This method should not modify class variables or call logic methods.
+    /// </summary>
+    /// <returns>
+    /// true - callback will triggered; 
+    /// false - callback will not triggered
+    /// </returns>
     protected abstract bool OnGestureCanceled(InteractiveEventArgs args);
 
     protected abstract void CallbackPressed(CallbackEventArgs args);

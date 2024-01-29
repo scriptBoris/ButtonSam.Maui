@@ -5,6 +5,10 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+
+#if RELEASE
+        lbl.IsVisible = true;
+#endif
     }
 
     private void Button_Clicked(object sender, EventArgs e)
@@ -70,6 +74,11 @@ public partial class MainPage : ContentPage
     private void Button_Clicked_12(object sender, EventArgs e)
     {
         Navigation.PushAsync(new NestedButtonsPage());
+    }
+
+    private void Button_Clicked_13(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new InputTransparentButtonPage());
     }
 }
 

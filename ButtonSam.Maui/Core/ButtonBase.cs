@@ -11,8 +11,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+
+#if IOS
+using UIKit;
+using CoreGraphics;
+using Microsoft.Maui.Controls.Compatibility.Platform.iOS;
+#endif
+
 namespace ButtonSam.Maui.Core;
 
+/// <summary>
+/// Базовый класс кнопки который умеет определять, нажата кнопка или нет.
+/// И еще умеет определять, находится ли курсор мыши над кнопкой или нет.
+/// </summary>
 public abstract class ButtonBase : InteractiveContainer
 {
     #region bindable props
@@ -132,17 +143,16 @@ public static class ViewExtensions
     {
 #if ANDROID
         return false;
-#endif
+#elif IOS
+        return false;
+#else
         double den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
         double x = point.X * den;
         double y = point.Y * den;
 
-        List<View> hitTestResult;
-#if WINDOWS
-        hitTestResult = HitTest(self, x, y);
-#else
-        hitTestResult = new List<View>();
-#endif
+        var hitTestResult = HitTest(self, x, y);
+        if (hitTestResult == null)
+            return false;
 
         foreach (var v in hitTestResult)
         {
@@ -169,11 +179,12 @@ public static class ViewExtensions
             }
         }
         return false;
+#endif
     }
 
-#if WINDOWS
-    public static List<View> HitTest(View from, double x, double y)
+    public static IEnumerable<View>? HitTest(View from, double x, double y)
     {
+#if WINDOWS
         double xp = x;
         double yp = y;
 
@@ -213,6 +224,37 @@ public static class ViewExtensions
 
         hitTestResult.Reverse();
         return hitTestResult;
-    }
+#elif IOS
+        var native = from.Handler?.PlatformView as UIView;
+        if (native == null)
+            return null;
+
+        double den = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
+        double xf = x / den;
+        double yf = y / den;
+
+        var nhitview = native.HitTest(new CGPoint(xf, yf), null);
+        if (nhitview == null || nhitview == native)
+            return null;
+
+        var tree = from.GetVisualTreeDescendants();
+        var hit = tree.FirstOrDefault(x => ((View)x).Handler?.PlatformView == nhitview) as View;
+        if (hit == null)
+            return null;
+
+        var list = new List<View> { hit };
+        var prnt = hit.Parent;
+        while (prnt != from)
+        {
+            if (prnt is View pv)
+                list.Add(pv);
+
+            prnt = prnt.Parent;
+        }
+
+        return list;
+#else
+        return null;
 #endif
+    }
 }

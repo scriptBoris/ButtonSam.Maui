@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
+             x:Class="Sample.InputTransparentButtonPage"
+             Title="Input transparent"
+             Padding="10">
+    <Grid>
+
+        <Button BackgroundColor="gray"
+                Clicked="Button_Clicked"
+                ImageSource="dotnet_bot.png"/>
+
+
+        <StackLayout CascadeInputTransparent="False"
+                     InputTransparent="True"
+                     Spacing="20"
+                     Margin="20">
+
+            <sbutton:Button InputTransparent="True"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Start">
+                <Label Text="ButtonSam with input transparent"/>
+            </sbutton:Button>
+
+            <Button InputTransparent="True"
+                    Text="MAUI Button with input transparent"
+                    VerticalOptions="Start"
+                    HorizontalOptions="Start"/>
+
+            <sbutton:Button InputTransparent="False"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Start">
+                <Label Text="ButtonSam without input transparent"/>
+            </sbutton:Button>
+
+            <Button InputTransparent="False"
+                    Text="MAUI Button without input transparent"
+                    VerticalOptions="Start"
+                    HorizontalOptions="Start"/>
+        </StackLayout>
+    </Grid>
+</ContentPage>
