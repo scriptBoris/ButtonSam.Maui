@@ -1,6 +1,7 @@
 <p align="center">
-<img src="Images/android13.gif" height="200"/>
-<img src="Images/windows11.gif" height="200"/>
+<img src="Images/droid.gif" height="200"/>
+<img src="Images/win.gif" height="200"/>
+<img src="Images/ios.gif" height="200"/>
 </p>
 
 [![NuGet](https://img.shields.io/nuget/v/ButtonSam.Maui.svg?label=NuGet)](https://www.nuget.org/packages/ButtonSam.Maui)
