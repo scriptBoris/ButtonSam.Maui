@@ -56,3 +56,12 @@ public static class MauiProgram
 | **MacCatalyst** | ❌ |
 | **Tizen** | ❌ |
 | **Linux** | ❌ |
+
+## About me
+I am a private developer and mostly do commercial work. Sometimes I can spend time developing my libraries.
+I would appreciate it if you would make a donation to me, now is a difficult time for me.
+<div align="left">
+    <a href="https://www.buymeacoffee.com/scriptboris">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a food&emoji=🍔&slug=scriptboris&button_colour=FFDD00&font_colour=000000&font_family=Comic&outline_colour=000000&coffee_colour=ffffff" />
+    </a>
+</div>
