@@ -51,6 +51,9 @@
 
             <Button Clicked="Button_Clicked_13"
                     Text="Input transparent"/>
+
+            <Button Clicked="Button_Clicked_14"
+                    Text="Scaled button"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>

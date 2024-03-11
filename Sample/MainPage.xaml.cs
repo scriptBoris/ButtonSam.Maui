@@ -80,5 +80,10 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new InputTransparentButtonPage());
     }
+
+    private void Button_Clicked_14(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ScaledButtonPage());
+    }
 }
 
