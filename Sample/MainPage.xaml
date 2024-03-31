@@ -54,6 +54,9 @@
 
             <Button Clicked="Button_Clicked_14"
                     Text="Scaled button"/>
+
+            <Button Clicked="Button_Clicked_15"
+                    Text="No clickable button"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>

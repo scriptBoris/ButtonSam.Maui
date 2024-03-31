@@ -36,6 +36,13 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             if (h.Native != null)
                 h.Native.CornerRadius = v.CornerRadius;
         },
+        [nameof(InteractiveContainer.IsClickable)] = (h, v) =>
+        {
+            if (h.Native != null)
+            {
+                h.Native.IsClickable = v.IsClickable;
+            }
+        },
     };
 
     public InteractiveContainer Proxy => (InteractiveContainer)VirtualView;

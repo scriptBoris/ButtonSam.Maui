@@ -1,21 +1,8 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
-using Microsoft.UI.Xaml.Controls;
-using WBorder = Microsoft.UI.Xaml.Controls.Border;
-using WColor = Microsoft.UI.Colors;
-using WRect = Windows.Foundation.Rect;
-using WSize = Windows.Foundation.Size;
+﻿using Microsoft.Maui.Platform;
+using Microsoft.UI.Xaml;
+using ButtonSam.Maui.Core;
 using WThickness = Microsoft.UI.Xaml.Thickness;
 using WCornerRadius = Microsoft.UI.Xaml.CornerRadius;
-using WShapes = Microsoft.UI.Xaml.Shapes;
-using Microsoft.Maui.Controls.Shapes;
-using System.ComponentModel;
-using Microsoft.UI.Xaml.Hosting;
-using WControls = Microsoft.UI.Xaml.Controls;
-using WView = Microsoft.UI.Xaml.FrameworkElement;
-using Microsoft.UI.Xaml;
-using Windows.Devices.Radios;
-using ButtonSam.Maui.Core;
 
 namespace ButtonSam.Maui.Platforms.Windows;
 
@@ -84,6 +71,16 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
                 native.IsTapEnabled = enable;
                 if (h.ContainerView != null)
                     h.ContainerView.IsHitTestVisible = enable;
+            }
+        },
+        [nameof(InteractiveContainer.IsClickable)] = (h, v) =>
+        {
+            var native = h.PlatformView;
+            bool clickable = v.IsClickable;
+            if (native != null)
+            {
+                native.IsTapEnabled = clickable;
+                native.IsHitTestVisible = clickable;
             }
         },
     };

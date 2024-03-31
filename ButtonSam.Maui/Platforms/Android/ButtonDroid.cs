@@ -30,9 +30,11 @@ public class ButtonDroid : LayoutViewGroup
     private readonly ColorDrawable _bgColorDrawable;
     private readonly APath _pathCorners = new();
     private readonly APath _pathBorders = new();
+    private readonly ButtonTouchDelegate _touchDelegate;
     private readonly double _density;
     private CornerRadius _cornerRadius;
     private float[] corners = Array.Empty<float>();
+    private bool _isClickable = true;
 
     public ButtonDroid(ButtonHandler handler, Context context) : base(context)
     {
@@ -40,9 +42,10 @@ public class ButtonDroid : LayoutViewGroup
         _density = Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
         _bgColorDrawable = new ColorDrawable();
         _bgRipple = CreateRipple(AColor.White);
+        _touchDelegate = new ButtonTouchDelegate(handler.Proxy, null, this);
         Clickable = true;
         LongClickable = true;
-        TouchDelegate = new ButtonTouchDelegate(handler.Proxy, null, this);
+        TouchDelegate = _touchDelegate;
 
         Background = new LayerDrawable(new Drawable[]
         {
@@ -86,6 +89,18 @@ public class ButtonDroid : LayoutViewGroup
 
     public bool HasCornerRadius => _cornerRadius.TopLeft > 0 || _cornerRadius.TopRight > 0 || _cornerRadius.BottomRight > 0 || _cornerRadius.BottomLeft > 0;
     public bool HasBorders => _handler.Proxy.BorderColor != null && _handler.Proxy.BorderWidth > 0;
+
+    public bool IsClickable
+    {
+        get => _isClickable;
+        set 
+        {
+            _isClickable = value;
+            Clickable = value;
+            LongClickable = value;
+            TouchDelegate = (value) ? _touchDelegate : null;
+        }
+    }
 
     public void SetupBackgroundColor(AColor color)
     {

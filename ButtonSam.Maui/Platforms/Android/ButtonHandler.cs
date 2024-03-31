@@ -55,7 +55,15 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
         {
             if (h.Native != null && v.TryRippleEffect)
                 h.Native.SetRippleColor(v.TapColor.ToPlatform());
-        }
+        },
+        [nameof(InteractiveContainer.IsClickable)] = (h, v) =>
+        {
+            if (h.Native != null)
+            {
+                h.Native.Clickable = v.IsClickable;
+                h.Native.IsClickable = v.IsClickable;
+            }
+        },
     };
 
     public InteractiveContainer Proxy => (InteractiveContainer)VirtualView;

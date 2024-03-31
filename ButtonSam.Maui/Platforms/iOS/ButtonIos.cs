@@ -4,12 +4,6 @@ using CoreFoundation;
 using CoreGraphics;
 using Foundation;
 using Microsoft.Maui.Platform;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UIKit;
 
 namespace ButtonSam.Maui.Platforms.iOS
@@ -29,6 +23,7 @@ namespace ButtonSam.Maui.Platforms.iOS
             Layer.EdgeAntialiasingMask = CAEdgeAntialiasingMask.All;
             Layer.BackgroundColor = Colors.Transparent.ToCGColor();
             ClipsToBounds = true;
+            IsClickable = true;
             UserInteractionEnabled = true;
             AccessibilityTraits = UIAccessibilityTrait.Button;
         }
@@ -62,6 +57,8 @@ namespace ButtonSam.Maui.Platforms.iOS
                 SetNeedsDisplay();
             }
         }
+
+        public bool IsClickable { get; set; }
 
         public void SetupBackground(UIColor backgroundColor)
         {
@@ -113,6 +110,9 @@ namespace ButtonSam.Maui.Platforms.iOS
 
         public override void TouchesBegan(NSSet touches, UIEvent? evt)
         {
+            if (!IsClickable)
+                return;
+
             var press = touches.Cast<UITouch>().First();
             var point = press.LocationInView(this);
             float x = (float)point.X;
@@ -136,6 +136,9 @@ namespace ButtonSam.Maui.Platforms.iOS
 
         public override void TouchesMoved(NSSet touches, UIEvent? evt)
         {
+            if (!IsClickable)
+                return;
+
             var press = touches.Cast<UITouch>().First();
             var point = press.LocationInView(this);
             float x = (float)point.X;
@@ -190,6 +193,19 @@ namespace ButtonSam.Maui.Platforms.iOS
                 Console.WriteLine($"[x{x};y{y}] state Ended");
             }
 #endif
+            if (!IsClickable)
+            {
+                _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                {
+                    X = x,
+                    Y = y,
+                    State = GestureTypes.Canceled,
+                    InputType = InputTypes.TouchTap,
+                    DeviceInputType = DeviceInputTypes.TouchScreen
+                });
+                return;
+            }
+
             _parent.Proxy.OnInteractive(new InteractiveEventArgs
             {
                 X = x,

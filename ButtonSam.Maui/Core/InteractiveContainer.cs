@@ -129,6 +129,19 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
         get => GetValue(ContentProperty) as View;
         set => SetValue(ContentProperty, value);
     }
+
+    // is clickable
+    public static readonly BindableProperty IsClickableProperty = BindableProperty.Create(
+        nameof(IsClickable),
+        typeof(bool),
+        typeof(InteractiveContainer),
+        true
+    );
+    public bool IsClickable
+    {
+        get => (bool)GetValue(IsClickableProperty);
+        set => SetValue(IsClickableProperty, value);
+    }
     #endregion bindable props
 
     #region layout methods
