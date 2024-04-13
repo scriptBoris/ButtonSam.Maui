@@ -5,6 +5,7 @@
              x:Class="Sample.ScaledButtonPage"
              Title="Scaled Button">
     <StackLayout Padding="50">
+        <Label Text="Move the mouse over the button"/>
         <custom:ScaledButton>
             <Label Text="SCALED BUTTON"/>
         </custom:ScaledButton>

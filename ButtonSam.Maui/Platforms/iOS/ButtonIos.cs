@@ -6,195 +6,226 @@ using Foundation;
 using Microsoft.Maui.Platform;
 using UIKit;
 
-namespace ButtonSam.Maui.Platforms.iOS
+namespace ButtonSam.Maui.Platforms.iOS;
+
+public class ButtonIos : LayoutView
 {
-    public class ButtonIos : LayoutView
+    private readonly CAShapeLayer _maskLayer = new();
+    private readonly ButtonHandler _parent;
+    private readonly UILongPressGestureRecognizer _gesture;
+    private CornerRadius _cornerRadius;
+    private double _borderWidth;
+    private UIColor? _borderColor;
+
+    public ButtonIos(ButtonHandler parent)
     {
-        private readonly CAShapeLayer _maskLayer = new();
-        private readonly ButtonHandler _parent;
-        private CornerRadius _cornerRadius;
-        private double _borderWidth;
-        private UIColor? _borderColor;
-
-        public ButtonIos(ButtonHandler parent)
+        _parent = parent;
+        _gesture = new UILongPressGestureRecognizer(OnTap)
         {
-            _parent = parent;
-            Layer.Mask = _maskLayer;
-            Layer.EdgeAntialiasingMask = CAEdgeAntialiasingMask.All;
-            Layer.BackgroundColor = Colors.Transparent.ToCGColor();
-            ClipsToBounds = true;
-            IsClickable = true;
-            UserInteractionEnabled = true;
-            AccessibilityTraits = UIAccessibilityTrait.Button;
-        }
+            MinimumPressDuration = 0,
+            ShouldRecognizeSimultaneously = ShouldRecognizeSimultaneously
+        };
+        AddGestureRecognizer(_gesture);
+        Layer.Mask = _maskLayer;
+        Layer.EdgeAntialiasingMask = CAEdgeAntialiasingMask.All;
+        Layer.BackgroundColor = Colors.Transparent.ToCGColor();
+        ClipsToBounds = true;
+        UserInteractionEnabled = true;
+        AccessibilityTraits = UIAccessibilityTrait.Button;
+    }
 
-        public CornerRadius CornerRadius
+    public CornerRadius CornerRadius
+    {
+        get => _cornerRadius;
+        set
         {
-            get => _cornerRadius;
-            set
-            {
-                _cornerRadius = value;
-                SetNeedsDisplay();
-            }
-        }
-
-        public double BorderWidth
-        {
-            get => _borderWidth;
-            set
-            {
-                _borderWidth = value;
-                SetNeedsDisplay();
-            }
-        }
-
-        public UIColor? BorderColor
-        {
-            get => _borderColor;
-            set
-            {
-                _borderColor = value;
-                SetNeedsDisplay();
-            }
-        }
-
-        public bool IsClickable { get; set; }
-
-        public void SetupBackground(UIColor backgroundColor)
-        {
-            BackgroundColor = backgroundColor;
-        }
-
-        public override void Draw(CGRect rect)
-        {
-            base.Draw(rect);
-
-            _maskLayer.Frame = rect;
-            if (CornerRadius.TopLeft > 0 || CornerRadius.TopRight > 0 || CornerRadius.BottomRight > 0 || CornerRadius.BottomLeft > 0)
-            {
-                var path = RoundedRectWithCustomCorners(rect, CornerRadius);
-                _maskLayer.Path = path?.CGPath;
-            }
-            else
-            {
-                _maskLayer.Path = CGPath.FromRect(rect);
-            }
-
-            if (BorderColor != null && BorderWidth > 0)
-            {
-                var pathBorder = RoundedRectWithCustomCorners(rect, CornerRadius, BorderWidth / 2);
-                if (pathBorder != null)
-                {
-                    pathBorder.LineWidth = (nfloat)BorderWidth;
-                    var strokeColor = BorderColor;
-                    strokeColor.SetStroke();
-                    pathBorder.Stroke();
-                }
-
-                if (pathBorder?.CGPath != null)
-                {
-                    using var context = UIGraphics.GetCurrentContext();
-                    if (context == null)
-                        return;
-
-                    context.AddPath(pathBorder.CGPath);
-                }
-            }
-        }
-
-        public override void LayoutSubviews()
-        {
-            base.LayoutSubviews();
+            _cornerRadius = value;
             SetNeedsDisplay();
         }
+    }
 
-        public override void TouchesBegan(NSSet touches, UIEvent? evt)
+    public double BorderWidth
+    {
+        get => _borderWidth;
+        set
         {
-            if (!IsClickable)
-                return;
+            _borderWidth = value;
+            SetNeedsDisplay();
+        }
+    }
 
-            var press = touches.Cast<UITouch>().First();
-            var point = press.LocationInView(this);
-            float x = (float)point.X;
-            float y = (float)point.Y;
+    public UIColor? BorderColor
+    {
+        get => _borderColor;
+        set
+        {
+            _borderColor = value;
+            SetNeedsDisplay();
+        }
+    }
 
-#if DEBUG
-            if (Initializer.UseDebugInfo)
-            {
-                Console.WriteLine($"[x{x};y{y}] state Began");
-            }
-#endif
-            _parent.Proxy.OnInteractive(new InteractiveEventArgs
-            {
-                X = x,
-                Y = y,
-                State = GestureTypes.Pressed,
-                InputType = InputTypes.TouchTap,
-                DeviceInputType = DeviceInputTypes.TouchScreen
-            });
+    public bool IsClickable
+    { 
+        get => _gesture.Enabled;
+        set => _gesture.Enabled = value;
+    }
+
+    public void SetupBackground(UIColor backgroundColor)
+    {
+        BackgroundColor = backgroundColor;
+    }
+
+    public override void Draw(CGRect rect)
+    {
+        base.Draw(rect);
+
+        _maskLayer.Frame = rect;
+        if (CornerRadius.TopLeft > 0 || CornerRadius.TopRight > 0 || CornerRadius.BottomRight > 0 || CornerRadius.BottomLeft > 0)
+        {
+            var path = RoundedRectWithCustomCorners(rect, CornerRadius);
+            _maskLayer.Path = path?.CGPath;
+        }
+        else
+        {
+            _maskLayer.Path = CGPath.FromRect(rect);
         }
 
-        public override void TouchesMoved(NSSet touches, UIEvent? evt)
+        if (BorderColor != null && BorderWidth > 0)
         {
-            if (!IsClickable)
-                return;
-
-            var press = touches.Cast<UITouch>().First();
-            var point = press.LocationInView(this);
-            float x = (float)point.X;
-            float y = (float)point.Y;
-
-            if (this.PointInside(point, null))
+            var pathBorder = RoundedRectWithCustomCorners(rect, CornerRadius, BorderWidth / 2);
+            if (pathBorder != null)
             {
+                pathBorder.LineWidth = (nfloat)BorderWidth;
+                var strokeColor = BorderColor;
+                strokeColor.SetStroke();
+                pathBorder.Stroke();
+            }
+
+            if (pathBorder?.CGPath != null)
+            {
+                using var context = UIGraphics.GetCurrentContext();
+                if (context == null)
+                    return;
+
+                context.AddPath(pathBorder.CGPath);
+            }
+        }
+    }
+
+    public override void LayoutSubviews()
+    {
+        base.LayoutSubviews();
+        SetNeedsDisplay();
+    }
+
+    protected virtual bool ShouldRecognizeSimultaneously(UIGestureRecognizer buttonGesture, UIGestureRecognizer other)
+    {
 #if DEBUG
-                if (Initializer.UseDebugInfo)
-                {
-                    Console.WriteLine($"[x{x};y{y}] state Moved");
-                }
+        if (Initializer.UseDebugInfo)
+        {
+            Console.WriteLine($"a = {buttonGesture.GetType().Name}");
+            Console.WriteLine($"b = {other.GetType().Name}");
+            Console.WriteLine($"a state = {buttonGesture.State}");
+            Console.WriteLine($"b state = {other.State}");
+        }
 #endif
+
+        if (buttonGesture == _gesture && other is UITapGestureRecognizer)
+        {
+            buttonGesture.State = UIGestureRecognizerState.Failed;
+            return true;
+        }
+
+        if (other.State == UIGestureRecognizerState.Began)
+            buttonGesture.State = UIGestureRecognizerState.Failed;
+
+        return true;
+    }
+
+    protected virtual void OnTap(UILongPressGestureRecognizer press)
+    {
+        var point = press.LocationInView(press.View);
+        float x = (float)point.X;
+        float y = (float)point.Y;
+
+#if DEBUG
+        if (Initializer.UseDebugInfo)
+        {
+            Console.WriteLine($"[x{x};y{y}] state {press.State}");
+        }
+#endif
+
+        switch (press.State)
+        {
+            case UIGestureRecognizerState.Began:
                 _parent.Proxy.OnInteractive(new InteractiveEventArgs
                 {
                     X = x,
                     Y = y,
-                    State = GestureTypes.Running,
+                    State = GestureTypes.Pressed,
                     InputType = InputTypes.TouchTap,
                     DeviceInputType = DeviceInputTypes.TouchScreen
                 });
-            }
-            else
-            {
-#if DEBUG
-                if (Initializer.UseDebugInfo)
+                break;
+
+            case UIGestureRecognizerState.Changed:
+                if (this.PointInside(point, null))
                 {
-                    Console.WriteLine($"[x{x};y{y}] state Exited");
+                    _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureTypes.Running,
+                        InputType = InputTypes.TouchTap,
+                        DeviceInputType = DeviceInputTypes.TouchScreen
+                    });
                 }
-#endif
-                _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                else
                 {
-                    X = x,
-                    Y = y,
-                    State = GestureTypes.Exited,
-                    InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
-                });
-            }
-        }
-
-        public override void TouchesEnded(NSSet touches, UIEvent? evt)
-        {
-            var press = touches.Cast<UITouch>().First();
-            var point = press.LocationInView(this);
-            float x = (float)point.X;
-            float y = (float)point.Y;
-
 #if DEBUG
-            if (Initializer.UseDebugInfo)
-            {
-                Console.WriteLine($"[x{x};y{y}] state Ended");
-            }
+                    if (Initializer.UseDebugInfo)
+                    {
+                        Console.WriteLine($"[x{x};y{y}] state Exited");
+                    }
 #endif
-            if (!IsClickable)
-            {
+                    _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureTypes.Exited,
+                        InputType = InputTypes.TouchTap,
+                        DeviceInputType = DeviceInputTypes.TouchScreen
+                    });
+                }
+                break;
+
+            case UIGestureRecognizerState.Ended:
+                if (IsClickable)
+                {
+                    _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureTypes.Release,
+                        InputType = InputTypes.TouchTap,
+                        DeviceInputType = DeviceInputTypes.TouchScreen
+                    });
+                }
+                else
+                {
+                    _parent.Proxy.OnInteractive(new InteractiveEventArgs
+                    {
+                        X = x,
+                        Y = y,
+                        State = GestureTypes.Canceled,
+                        InputType = InputTypes.TouchTap,
+                        DeviceInputType = DeviceInputTypes.TouchScreen
+                    });
+                }
+                break;
+
+            case UIGestureRecognizerState.Cancelled:
+            case UIGestureRecognizerState.Failed:
                 _parent.Proxy.OnInteractive(new InteractiveEventArgs
                 {
                     X = x,
@@ -203,107 +234,71 @@ namespace ButtonSam.Maui.Platforms.iOS
                     InputType = InputTypes.TouchTap,
                     DeviceInputType = DeviceInputTypes.TouchScreen
                 });
-                return;
-            }
-
-            _parent.Proxy.OnInteractive(new InteractiveEventArgs
-            {
-                X = x,
-                Y = y,
-                State = GestureTypes.Release,
-                InputType = InputTypes.TouchTap,
-                DeviceInputType = DeviceInputTypes.TouchScreen
-            });
-        }
-
-        public override void TouchesCancelled(NSSet touches, UIEvent? evt)
-        {
-            var press = touches.Cast<UITouch>().First();
-            var point = press.LocationInView(this);
-            float x = (float)point.X;
-            float y = (float)point.Y;
-
-#if DEBUG
-            if (Initializer.UseDebugInfo)
-            {
-                Console.WriteLine($"[x{x};y{y}] state Cancelled");
-            }
-#endif
-            _parent.Proxy.OnInteractive(new InteractiveEventArgs
-            {
-                X = x,
-                Y = y,
-                State = GestureTypes.Canceled,
-                InputType = InputTypes.TouchTap,
-                DeviceInputType = DeviceInputTypes.TouchScreen
-            });
-        }
-
-        public override void TouchesEstimatedPropertiesUpdated(NSSet touches)
-        {
-            base.TouchesEstimatedPropertiesUpdated(touches);
-        }
-
-        public static UIBezierPath? RoundedRectWithCustomCorners(CGRect rect, CornerRadius cornerRadius,
-            double insets = 0)
-        {
-            if (rect.GetMaxX() <= 0 || rect.GetMaxY() <= 0)
-                return null;
-
-            if (insets > 0)
-                rect = rect.Inset((nfloat)insets, (nfloat)insets);
-
-            var TLRadius = (nfloat)(cornerRadius.TopLeft);
-            var TRRadius = (nfloat)(cornerRadius.TopRight);
-            var BLRadius = (nfloat)(cornerRadius.BottomLeft);
-            var BRRadius = (nfloat)(cornerRadius.BottomRight);
-            var path = new UIBezierPath();
-            var minX = rect.GetMinX();
-            var minY = rect.GetMinY();
-            var maxX = rect.GetMaxX();
-            var maxY = rect.GetMaxY();
-
-            if (maxX <= 0 || maxY <= 0)
-                return null;
-
-            var tl = new CGPoint(minX + TLRadius, minY + TLRadius);
-            path.ArcWithCenter(tl, TLRadius, 180, 90, true);
-            path.AddLineTo(new CGPoint(maxX - TRRadius, minY));
-
-            var tr = new CGPoint(maxX - TRRadius, minY + TRRadius);
-            path.ArcWithCenter(tr, TRRadius, 90, 0, true);
-            path.AddLineTo(new CGPoint(maxX, maxY - BRRadius));
-
-            var br = new CGPoint(maxX - BRRadius, maxY - BRRadius);
-            path.ArcWithCenter(br, BRRadius, 0, 270, true);
-            path.AddLineTo(new CGPoint(minX + BLRadius, maxY));
-
-            var bl = new CGPoint(minX + BLRadius, maxY - BLRadius);
-            path.ArcWithCenter(bl, BLRadius, 270, 180, true);
-
-            path.ClosePath();
-            return path;
+                break;
+            default:
+                break;
         }
     }
 
-    public static class DrawExtensions
+    public static UIBezierPath? RoundedRectWithCustomCorners(CGRect rect, CornerRadius cornerRadius,
+        double insets = 0)
     {
-        public static UIBezierPath ArcWithCenter(this UIBezierPath path, CGPoint center, nfloat radius, nfloat startAngleDegrees, nfloat endAngleDegrees, bool clockwise)
-        {
-            nfloat startAngleRadians = DegreesToRadians(startAngleDegrees);
-            nfloat endAngleRadians = DegreesToRadians(endAngleDegrees);
+        if (rect.GetMaxX() <= 0 || rect.GetMaxY() <= 0)
+            return null;
 
-            startAngleRadians = -startAngleRadians;
-            endAngleRadians = -endAngleRadians;
+        if (insets > 0)
+            rect = rect.Inset((nfloat)insets, (nfloat)insets);
 
-            path.AddArc(center, radius, startAngleRadians, endAngleRadians, clockwise);
+        var TLRadius = (nfloat)(cornerRadius.TopLeft);
+        var TRRadius = (nfloat)(cornerRadius.TopRight);
+        var BLRadius = (nfloat)(cornerRadius.BottomLeft);
+        var BRRadius = (nfloat)(cornerRadius.BottomRight);
+        var path = new UIBezierPath();
+        var minX = rect.GetMinX();
+        var minY = rect.GetMinY();
+        var maxX = rect.GetMaxX();
+        var maxY = rect.GetMaxY();
 
-            return path;
-        }
+        if (maxX <= 0 || maxY <= 0)
+            return null;
 
-        private static nfloat DegreesToRadians(nfloat degrees)
-        {
-            return (nfloat)(degrees * Math.PI / 180);
-        }
+        var tl = new CGPoint(minX + TLRadius, minY + TLRadius);
+        path.ArcWithCenter(tl, TLRadius, 180, 90, true);
+        path.AddLineTo(new CGPoint(maxX - TRRadius, minY));
+
+        var tr = new CGPoint(maxX - TRRadius, minY + TRRadius);
+        path.ArcWithCenter(tr, TRRadius, 90, 0, true);
+        path.AddLineTo(new CGPoint(maxX, maxY - BRRadius));
+
+        var br = new CGPoint(maxX - BRRadius, maxY - BRRadius);
+        path.ArcWithCenter(br, BRRadius, 0, 270, true);
+        path.AddLineTo(new CGPoint(minX + BLRadius, maxY));
+
+        var bl = new CGPoint(minX + BLRadius, maxY - BLRadius);
+        path.ArcWithCenter(bl, BLRadius, 270, 180, true);
+
+        path.ClosePath();
+        return path;
+    }
+}
+
+public static class DrawExtensions
+{
+    public static UIBezierPath ArcWithCenter(this UIBezierPath path, CGPoint center, nfloat radius, nfloat startAngleDegrees, nfloat endAngleDegrees, bool clockwise)
+    {
+        nfloat startAngleRadians = DegreesToRadians(startAngleDegrees);
+        nfloat endAngleRadians = DegreesToRadians(endAngleDegrees);
+
+        startAngleRadians = -startAngleRadians;
+        endAngleRadians = -endAngleRadians;
+
+        path.AddArc(center, radius, startAngleRadians, endAngleRadians, clockwise);
+
+        return path;
+    }
+
+    private static nfloat DegreesToRadians(nfloat degrees)
+    {
+        return (nfloat)(degrees * Math.PI / 180);
     }
 }
