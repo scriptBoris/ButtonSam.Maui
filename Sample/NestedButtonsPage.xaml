@@ -10,17 +10,17 @@
         <VerticalStackLayout Padding="10"
                              Spacing="10">
 
-            <!--  Button into button  -->
-            <Label Text="Button into button" />
+            <!--Button into button-->
+            <Label Text="Button into button"/>
             <sbutton:Button Padding="30">
                 <sbutton:Button HorizontalOptions="Center"
                                 BackgroundColor="Gray">
-                    <Label Text="Button" />
+                    <Label Text="Button"/>
                 </sbutton:Button>
             </sbutton:Button>
 
-            <!--  Custom interactive view into button  -->
-            <Label Text="Custom interactive view into button" />
+            <!--Custom interactive view into button-->
+            <Label Text="Custom interactive view into button"/>
             <sbutton:Button Padding="30">
                 <ContentView>
                     <Label HorizontalOptions="Center"
@@ -33,8 +33,8 @@
                 </ContentView>
             </sbutton:Button>
 
-            <!--  Unclickable area into button  -->
-            <Label Text="Unclickable area into button" />
+            <!--Unclickable area into button-->
+            <Label Text="Unclickable area into button"/>
             <sbutton:Button Padding="0">
                 <Grid ColumnDefinitions="*,*"
                       RowDefinitions="150">
@@ -42,7 +42,7 @@
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"
                            Text="It is are clickable area"
-                           TextColor="Green" />
+                           TextColor="Green"/>
 
                     <Border Grid.Column="1"
                             Margin="10"
@@ -50,7 +50,7 @@
                             BackgroundColor="#343434"
                             StrokeShape="RoundRectangle 10">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer />
+                            <TapGestureRecognizer/>
                         </Border.GestureRecognizers>
 
                         <StackLayout>
@@ -58,14 +58,30 @@
                             <Label HorizontalTextAlignment="Center"
                                    VerticalTextAlignment="Center"
                                    Text="It is are unclickable area"
-                                   TextColor="Red" />
-                            <Stepper />
-                            <Slider />
+                                   TextColor="Red"/>
+                            <Stepper/>
+                            <Slider/>
 
                         </StackLayout>
                     </Border>
                 </Grid>
             </sbutton:Button>
+
+            <Label Text="With interactive parent"/>
+            <StackLayout Padding="20"
+                         BackgroundColor="Gray"
+                         Spacing="20">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_1"/>
+                </StackLayout.GestureRecognizers>
+
+                <Label Text="I interactive parent container"/>
+
+                <sbutton:Button>
+                    <Label HorizontalTextAlignment="Center"
+                           Text="Button"/>
+                </sbutton:Button>
+            </StackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

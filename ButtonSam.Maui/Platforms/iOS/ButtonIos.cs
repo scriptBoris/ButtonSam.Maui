@@ -132,7 +132,14 @@ public class ButtonIos : LayoutView
 
         if (buttonGesture == _gesture && other is UITapGestureRecognizer)
         {
-            buttonGesture.State = UIGestureRecognizerState.Failed;
+            bool isChildren = other.View.IsDescendantOfView(this);
+            bool isParent = this.IsDescendantOfView(other.View);
+
+            if (isChildren)
+                buttonGesture.State = UIGestureRecognizerState.Failed;
+            else if (isParent)
+                other.State = UIGestureRecognizerState.Failed;
+
             return true;
         }
 
