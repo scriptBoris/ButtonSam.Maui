@@ -21,7 +21,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Copyright>MIT</Copyright>
 		<PackageTags>Maui, button, touch, ios, android, windows</PackageTags>
-		<Version>8.1.0</Version>
+		<Version>8.1.1</Version>
 		<PackageOutputPath>$(SolutionDir)/Nuget</PackageOutputPath>
 	    <Description>Simple button for .NET MAUI</Description>
 	    <PackageProjectUrl>https://github.com/scriptBoris/ButtonSam.Maui</PackageProjectUrl>
