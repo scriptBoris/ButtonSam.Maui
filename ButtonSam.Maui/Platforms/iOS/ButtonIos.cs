@@ -10,9 +10,10 @@ namespace ButtonSam.Maui.Platforms.iOS;
 
 public class ButtonIos : LayoutView
 {
-    private readonly CAShapeLayer _maskLayer = new();
-    private readonly ButtonHandler _parent;
-    private readonly UILongPressGestureRecognizer _gesture;
+    private ButtonHandler _parent;
+    private CAShapeLayer _maskLayer = new();
+    private UILongPressGestureRecognizer _gesture;
+
     private CornerRadius _cornerRadius;
     private double _borderWidth;
     private UIColor? _borderColor;
@@ -245,6 +246,16 @@ public class ButtonIos : LayoutView
             default:
                 break;
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        RemoveGestureRecognizer(_gesture);
+        _parent = null!;
+        _maskLayer = null!;
+        _gesture = null!;
+
+        base.Dispose(disposing);
     }
 
     public static UIBezierPath? RoundedRectWithCustomCorners(CGRect rect, CornerRadius cornerRadius,
