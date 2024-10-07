@@ -230,6 +230,8 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
             {
                 X = args.OverrideX ?? args.X,
                 Y = args.OverrideY ?? args.Y,
+                DeviceInputType = args.DeviceInputType,
+                InputType = args.InputType,
                 IsRealCallback = args.IsRealState,
             };
 

@@ -19,6 +19,16 @@ public class CallbackEventArgs
     public required float Y { get; init; }
 
     /// <summary>
+    /// Method input type
+    /// </summary>
+    public required InputTypes InputType { get; init; }
+
+    /// <summary>
+    /// Device input type
+    /// </summary>
+    public required DeviceInputTypes DeviceInputType { get; init; }
+
+    /// <summary>
     /// Notifies whether the gesture was reproduced by a human or a software method
     /// </summary>
     public required bool IsRealCallback { get; init; }
