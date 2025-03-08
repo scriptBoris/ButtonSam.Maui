@@ -12,6 +12,7 @@ using ARectF = Android.Graphics.RectF;
 using APath = Android.Graphics.Path;
 using ARegion = Android.Graphics.Region;
 using ButtonSam.Maui.Core;
+using System.Runtime.InteropServices;
 
 namespace ButtonSam.Maui.Platforms.Android;
 
@@ -24,7 +25,7 @@ internal class ButtonTouchDelegate : TouchDelegate
 
     private InteractiveContainer Proxy { get; set; }
 
-    public override bool OnTouchEvent(MotionEvent e)
+    public unsafe override bool OnTouchEvent(MotionEvent e)
     {
         float den = (float)Microsoft.Maui.Devices.DeviceDisplay.Current.MainDisplayInfo.Density;
         float x = e.GetX() / den;
@@ -41,6 +42,9 @@ internal class ButtonTouchDelegate : TouchDelegate
         }
 #endif
 
+        var pptr = stackalloc InteractiveEventArgsSrc[1];
+        nint ptr = (nint)pptr;
+
         switch (e.ActionMasked)
         {
             case MotionEventActions.Down:
@@ -50,7 +54,8 @@ internal class ButtonTouchDelegate : TouchDelegate
                     Y = y,
                     State = GestureTypes.Pressed,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = ptr,
                 });
                 break;
 
@@ -61,7 +66,8 @@ internal class ButtonTouchDelegate : TouchDelegate
                     Y = y,
                     State = GestureTypes.Running,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = ptr,
                 });
                 break;
 
@@ -72,7 +78,8 @@ internal class ButtonTouchDelegate : TouchDelegate
                     Y = y,
                     State = GestureTypes.Release,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = ptr,
                 });
                 break;
 
@@ -83,7 +90,8 @@ internal class ButtonTouchDelegate : TouchDelegate
                     Y = y,
                     State = GestureTypes.Canceled,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = ptr,
                 });
                 break;
 

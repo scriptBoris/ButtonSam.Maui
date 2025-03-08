@@ -12,32 +12,32 @@
                 ImageSource="dotnet_bot.png"/>
 
 
-        <StackLayout CascadeInputTransparent="False"
+        <StackLayout Margin="20"
+                     CascadeInputTransparent="False"
                      InputTransparent="True"
-                     Spacing="20"
-                     Margin="20">
+                     Spacing="20">
 
-            <sbutton:Button InputTransparent="True"
+            <sbutton:Button HorizontalOptions="Start"
                             VerticalOptions="Start"
-                            HorizontalOptions="Start">
+                            InputTransparent="True">
                 <Label Text="ButtonSam with input transparent"/>
             </sbutton:Button>
 
-            <Button InputTransparent="True"
-                    Text="MAUI Button with input transparent"
+            <Button HorizontalOptions="Start"
                     VerticalOptions="Start"
-                    HorizontalOptions="Start"/>
+                    InputTransparent="True"
+                    Text="MAUI Button with input transparent"/>
 
-            <sbutton:Button InputTransparent="False"
+            <sbutton:Button HorizontalOptions="Start"
                             VerticalOptions="Start"
-                            HorizontalOptions="Start">
+                            InputTransparent="False">
                 <Label Text="ButtonSam without input transparent"/>
             </sbutton:Button>
 
-            <Button InputTransparent="False"
-                    Text="MAUI Button without input transparent"
+            <Button HorizontalOptions="Start"
                     VerticalOptions="Start"
-                    HorizontalOptions="Start"/>
+                    InputTransparent="False"
+                    Text="MAUI Button without input transparent"/>
         </StackLayout>
     </Grid>
 </ContentPage>

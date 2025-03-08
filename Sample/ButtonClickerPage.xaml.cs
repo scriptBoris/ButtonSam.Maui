@@ -18,7 +18,12 @@ public partial class ButtonClickerPage : ContentPage
 		Test = $"click counter: {count}";
 	});
 
-	private string _test = "click counter: 0";
+	public ICommand CommandLongTap => new Command(() =>
+	{
+		DisplayAlert("Message", "LONG TAP", "OK");
+	});
+
+    private string _test = "click counter: 0";
 	public string Test
 	{
 		get => _test;

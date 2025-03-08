@@ -7,6 +7,7 @@ public partial class MultipleButtonsPage : ContentPage
 	public MultipleButtonsPage()
 	{
 		CommandSelectItem = new Command(ActionSelectItem);
+		CommandLongTapItem = new Command(ActionLongTapItem);
         InitializeComponent();
 
 		var list = new List<string>();
@@ -26,4 +27,13 @@ public partial class MultipleButtonsPage : ContentPage
 			DisplayAlert("Pressed", $"You are pressed {str}", "OK");
         }
 	}
+
+    public ICommand CommandLongTapItem { get; }
+	public void ActionLongTapItem(object item)
+	{
+        if (item is string str)
+        {
+            DisplayAlert("Long tap", $"You are pressed {str}", "OK");
+        }
+    }
 }

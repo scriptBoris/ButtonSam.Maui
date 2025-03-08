@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:bsam="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              xmlns:local="clr-namespace:Sample"
-             x:DataType="local:ButtonNoRipplePage"
              x:Class="Sample.ButtonNoRipplePage"
+             x:DataType="local:ButtonNoRipplePage"
              Title="No ripple"
              Padding="10">
     <VerticalStackLayout Spacing="10">
         <Label Text="{Binding Test}"/>
-        <bsam:Button TapCommand="{Binding CommandTap}"
-                     HorizontalOptions="Start"
+        <bsam:Button HorizontalOptions="Start"
+                     TapCommand="{Binding CommandTap}"
                      TryRippleEffect="False">
             <Label Text="I no using ripple effect on Android!"
                    TextColor="White"/>

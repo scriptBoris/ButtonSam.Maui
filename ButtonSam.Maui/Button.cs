@@ -1,4 +1,5 @@
 ﻿using ButtonSam.Maui.Core;
+using ButtonSam.Maui.Internal;
 using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ public class Button : ButtonBase
 #else
     protected const float _touchSlop = 10000;
 #endif
+
+    private InternalTimer? _longTapTimer;
 
     #region bindable props
     // tap command
@@ -48,6 +51,32 @@ public class Button : ButtonBase
     {
         get => GetValue(TapCommandParameterProperty);
         set => SetValue(TapCommandParameterProperty, value);
+    }
+
+    // long tap command
+    public static readonly BindableProperty LongTapCommandProperty = BindableProperty.Create(
+        nameof(LongTapCommand),
+        typeof(ICommand),
+        typeof(Button),
+        null
+    );
+    public ICommand? LongTapCommand
+    {
+        get => GetValue(LongTapCommandProperty) as ICommand;
+        set => SetValue(LongTapCommandProperty, value);
+    }
+
+    // long tap command parameter
+    public static readonly BindableProperty LongTapCommandParameterProperty = BindableProperty.Create(
+        nameof(LongTapCommandParameter),
+        typeof(object),
+        typeof(Button),
+        null
+    );
+    public object? LongTapCommandParameter
+    {
+        get => GetValue(LongTapCommandParameterProperty);
+        set => SetValue(LongTapCommandParameterProperty, value);
     }
 
     // is auto circle
@@ -306,6 +335,7 @@ public class Button : ButtonBase
         if (IsPressed && (deltaX > _touchSlop || deltaY > _touchSlop))
         {
             args.NextFakeState = GestureTypes.Release;
+            //args.SetNextFakeState(GestureTypes.Release);
             return false;
         }
 
@@ -327,6 +357,26 @@ public class Button : ButtonBase
         StartY = args.Y;
         IsPressed = true;
         AnimationPressedStart(args.X, args.Y);
+
+        if (args.IsRealCallback && args.DeviceInputType == DeviceInputTypes.TouchScreen)
+        {
+            _longTapTimer?.Dispose();
+            _longTapTimer = this.Dispatcher.CreateAndStartTimer(TimeSpan.FromMilliseconds(500), () =>
+            {
+                if (IsPressed)
+                {
+                    OnLongTapCompleted();
+                    CallbackRelease(new CallbackEventArgs
+                    {
+                        X = args.X,
+                        Y = args.Y,
+                        DeviceInputType = args.DeviceInputType,
+                        InputType = args.InputType,
+                        IsRealCallback = false,
+                    });
+                }
+            });
+        }
     }
 
     protected override void CallbackRelease(CallbackEventArgs args)
@@ -334,6 +384,7 @@ public class Button : ButtonBase
         if (IsPressed)
         {
             IsPressed = false;
+            _longTapTimer?.Dispose();
 
             if (args.IsRealCallback)
             {
@@ -379,10 +430,19 @@ public class Button : ButtonBase
 
     protected virtual void OnTapCompleted()
     {
-        if (TapCommand == null || !IsEnabled)
+        if (TapCommand == null)
             return;
 
         if (TapCommand.CanExecute(TapCommandParameter))
             TapCommand.Execute(TapCommandParameter);
+    }
+
+    protected virtual void OnLongTapCompleted()
+    {
+        if (LongTapCommand == null)
+            return;
+
+        if (LongTapCommand.CanExecute(LongTapCommandParameter))
+            LongTapCommand.Execute(LongTapCommandParameter);
     }
 }

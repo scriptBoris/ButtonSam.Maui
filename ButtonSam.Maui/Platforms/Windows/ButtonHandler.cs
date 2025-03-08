@@ -117,11 +117,13 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
     }
 
     #region touch handles
-    private void N_PointerCanceled(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerCanceled(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
 
 #if DEBUG
         if (Initializer.UseDebugInfo)
@@ -136,45 +138,56 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             Y = y,
             State = GestureTypes.Canceled,
             InputType = GetInputType(point),
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
 
-    private void N_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
+
         Proxy.OnInteractive(new InteractiveEventArgs
         {
             X = x,
             Y = y,
             State = GestureTypes.Entered,
             InputType = GetInputType(point),
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
 
-    private void N_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
+
         Proxy.OnInteractive(new InteractiveEventArgs
         {
             X = x,
             Y = y,
             State = GestureTypes.Exited,
             InputType = GetInputType(point),
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
 
-    private void N_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
 
 #if DEBUG
         if (Initializer.UseDebugInfo)
@@ -189,15 +202,18 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             Y = y,
             State = GestureTypes.Running,
             InputType = pressedInputType,
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
 
-    private void N_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
 
         pressedInputType = GetInputType(point);
         Proxy.OnInteractive(new InteractiveEventArgs
@@ -206,15 +222,18 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             Y = y,
             State = GestureTypes.Pressed,
             InputType = pressedInputType,
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
 
-    private void N_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private unsafe void N_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         var point = e.GetCurrentPoint((UIElement)sender);
         float x = (float)point.Position.X;
         float y = (float)point.Position.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
 
         Proxy.OnInteractive(new InteractiveEventArgs
         {
@@ -222,7 +241,8 @@ public class ButtonHandler : Microsoft.Maui.Handlers.LayoutHandler, IButtonHandl
             Y = y,
             State = GestureTypes.Release,
             InputType = GetInputType(point),
-            DeviceInputType = GetDeviceInputType(point)
+            DeviceInputType = GetDeviceInputType(point),
+            SrcPointer = src,
         });
     }
     #endregion touch handles

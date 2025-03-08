@@ -226,10 +226,11 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
 
         if (canRunning)
         {
+            var pointf = args.OverrideCoordinates ?? new PointF(args.X, args.Y);
             var callbackArgs = new CallbackEventArgs
             {
-                X = args.OverrideX ?? args.X,
-                Y = args.OverrideY ?? args.Y,
+                X = pointf.X,
+                Y = pointf.Y,
                 DeviceInputType = args.DeviceInputType,
                 InputType = args.InputType,
                 IsRealCallback = args.IsRealState,
@@ -260,16 +261,18 @@ public abstract class InteractiveContainer : Layout, ILayoutManager, IPadding
             }
         }
 
-        if (args.NextFakeState != null && args.NextFakeState.Value != args.State)
+        var next = args.NextFakeState;
+        if (next != null && next.Value != args.State)
         {
             OnInteractive(new InteractiveEventArgs
             {
                 X = args.X,
                 Y = args.Y,
-                State = args.NextFakeState.Value,
+                State = next.Value,
                 InputType = args.InputType,
                 DeviceInputType = args.DeviceInputType,
                 IsRealState = false,
+                SrcPointer = args.SrcPointer,
             });
         }
     }

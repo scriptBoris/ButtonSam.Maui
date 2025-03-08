@@ -3,16 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sbutton="clr-namespace:ButtonSam.Maui;assembly=ButtonSam.Maui"
              x:Class="Sample.MultipleButtonsPage"
-             x:Name="root"
-             Title="MultipleButtonsPage">
+             Title="MultipleButtonsPage"
+             x:Name="root">
     <StackLayout>
         <CollectionView x:Name="collectionView"
-                        ItemSizingStrategy="MeasureFirstItem"
-                        VerticalOptions="FillAndExpand">
+                        VerticalOptions="FillAndExpand"
+                        ItemSizingStrategy="MeasureFirstItem">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <ContentView Padding="10">
-                        <sbutton:Button TapCommand="{Binding CommandSelectItem, Source={Reference root}}"
+                        <sbutton:Button LongTapCommand="{Binding CommandLongTapItem, Source={Reference root}}"
+                                        LongTapCommandParameter="{Binding .}"
+                                        TapCommand="{Binding CommandSelectItem, Source={Reference root}}"
                                         TapCommandParameter="{Binding .}">
                             <Label Text="{Binding .}"/>
                         </sbutton:Button>

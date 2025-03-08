@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ButtonSam.Maui.Core;
 
-public class CallbackEventArgs
+public struct CallbackEventArgs
 {
     /// <summary>
     /// MAUI coordinates

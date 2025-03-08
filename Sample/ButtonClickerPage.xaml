@@ -9,14 +9,15 @@
              Padding="10">
     <StackLayout Spacing="15">
         <bsam:Button x:Name="button"
+                     LongTapCommand="{Binding CommandLongTap}"
                      TapCommand="{Binding CommandTap}">
             <StackLayout Spacing="10">
-                <Image Source="dotnet_bot.png"
+                <Image MaximumHeightRequest="140"
                        MaximumWidthRequest="140"
-                       MaximumHeightRequest="140"/>
-                <Label Text="Hello world"
-                       TextColor="White"
-                       HorizontalTextAlignment="Center"/>
+                       Source="dotnet_bot.png"/>
+                <Label HorizontalTextAlignment="Center"
+                       Text="Hello world"
+                       TextColor="White"/>
             </StackLayout>
         </bsam:Button>
 

@@ -150,11 +150,13 @@ public class ButtonIos : LayoutView
         return true;
     }
 
-    protected virtual void OnTap(UILongPressGestureRecognizer press)
+    protected unsafe virtual void OnTap(UILongPressGestureRecognizer press)
     {
         var point = press.LocationInView(press.View);
         float x = (float)point.X;
         float y = (float)point.Y;
+        var ptr = stackalloc InteractiveEventArgsSrc[1];
+        nint src = (nint)ptr;
 
 #if DEBUG
         if (Initializer.UseDebugInfo)
@@ -172,7 +174,8 @@ public class ButtonIos : LayoutView
                     Y = y,
                     State = GestureTypes.Pressed,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = src,
                 });
                 break;
 
@@ -185,7 +188,8 @@ public class ButtonIos : LayoutView
                         Y = y,
                         State = GestureTypes.Running,
                         InputType = InputTypes.TouchTap,
-                        DeviceInputType = DeviceInputTypes.TouchScreen
+                        DeviceInputType = DeviceInputTypes.TouchScreen,
+                        SrcPointer = src,
                     });
                 }
                 else
@@ -202,7 +206,8 @@ public class ButtonIos : LayoutView
                         Y = y,
                         State = GestureTypes.Exited,
                         InputType = InputTypes.TouchTap,
-                        DeviceInputType = DeviceInputTypes.TouchScreen
+                        DeviceInputType = DeviceInputTypes.TouchScreen,
+                        SrcPointer = src,
                     });
                 }
                 break;
@@ -216,7 +221,8 @@ public class ButtonIos : LayoutView
                         Y = y,
                         State = GestureTypes.Release,
                         InputType = InputTypes.TouchTap,
-                        DeviceInputType = DeviceInputTypes.TouchScreen
+                        DeviceInputType = DeviceInputTypes.TouchScreen,
+                        SrcPointer = src,
                     });
                 }
                 else
@@ -227,7 +233,8 @@ public class ButtonIos : LayoutView
                         Y = y,
                         State = GestureTypes.Canceled,
                         InputType = InputTypes.TouchTap,
-                        DeviceInputType = DeviceInputTypes.TouchScreen
+                        DeviceInputType = DeviceInputTypes.TouchScreen,
+                        SrcPointer = src,
                     });
                 }
                 break;
@@ -240,7 +247,8 @@ public class ButtonIos : LayoutView
                     Y = y,
                     State = GestureTypes.Canceled,
                     InputType = InputTypes.TouchTap,
-                    DeviceInputType = DeviceInputTypes.TouchScreen
+                    DeviceInputType = DeviceInputTypes.TouchScreen,
+                    SrcPointer = src,
                 });
                 break;
             default:

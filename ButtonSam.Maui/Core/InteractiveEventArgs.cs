@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace ButtonSam.Maui.Core;
 
-public class InteractiveEventArgs
+public struct InteractiveEventArgsSrc
 {
-    internal InteractiveEventArgs()
+    public PointF? OverrideCoordinates { get; set; }
+    public GestureTypes? NextFakeState { get; set; }
+}
+
+public unsafe struct InteractiveEventArgs
+{
+    public InteractiveEventArgs()
     {
     }
 
@@ -43,21 +49,45 @@ public class InteractiveEventArgs
     public bool IsRealState { get; init; } = true;
 
     /// <summary>
-    /// Specify a value for this property so that the callback methods count
-    /// gestures to these coordinates
+    /// Address of original event source
     /// </summary>
-    public float? OverrideX { get; set; }
+    public required nint SrcPointer { get; init; }
 
     /// <summary>
     /// Specify a value for this property so that the callback methods count
     /// gestures to these coordinates
     /// </summary>
-    public float? OverrideY { get; set; }
+    public PointF? OverrideCoordinates
+    {
+        get
+        {
+            var p = (InteractiveEventArgsSrc*)SrcPointer;
+            return p->OverrideCoordinates;
+        }
+        set
+        {
+            var p = (InteractiveEventArgsSrc*)SrcPointer;
+            p->OverrideCoordinates = value;
+        }
+    }
 
     /// <summary>
     /// Specify a value so that after processing the event, the following event 
     /// with this type of status and the IsRealState property with the value "false"
     /// will be triggered
     /// </summary>
-    public GestureTypes? NextFakeState { get; set; }
+    public GestureTypes? NextFakeState
+    {
+        get
+        {
+
+            var p = (InteractiveEventArgsSrc*)SrcPointer;
+            return p->NextFakeState;
+        }
+        set
+        {
+            var p = (InteractiveEventArgsSrc*)SrcPointer;
+            p->NextFakeState = value;
+        }
+    }
 }
