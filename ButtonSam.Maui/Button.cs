@@ -26,6 +26,9 @@ public class Button : ButtonBase
 
     private InternalTimer? _longTapTimer;
 
+    public event EventHandler<CallbackEventArgs>? OnTapped;
+    public event EventHandler<CallbackEventArgs>? OnLongTapped;
+
     #region bindable props
     // tap command
     public static readonly BindableProperty TapCommandProperty = BindableProperty.Create(
@@ -365,7 +368,7 @@ public class Button : ButtonBase
             {
                 if (IsPressed)
                 {
-                    OnLongTapCompleted();
+                    OnLongTapCompleted(args);
                     CallbackRelease(new CallbackEventArgs
                     {
                         X = args.X,
@@ -388,7 +391,7 @@ public class Button : ButtonBase
 
             if (args.IsRealCallback)
             {
-                OnTapCompleted();
+                OnTapCompleted(args);
                 AnimationPressedRestore(args.X, args.Y);
             }
             else
@@ -428,8 +431,10 @@ public class Button : ButtonBase
     }
     #endregion gestures
 
-    protected virtual void OnTapCompleted()
+    protected virtual void OnTapCompleted(CallbackEventArgs args)
     {
+        OnTapped?.Invoke(this, args);
+
         if (TapCommand == null)
             return;
 
@@ -437,8 +442,10 @@ public class Button : ButtonBase
             TapCommand.Execute(TapCommandParameter);
     }
 
-    protected virtual void OnLongTapCompleted()
+    protected virtual void OnLongTapCompleted(CallbackEventArgs args)
     {
+        OnLongTapped?.Invoke(this, args);
+
         if (LongTapCommand == null)
             return;
 
